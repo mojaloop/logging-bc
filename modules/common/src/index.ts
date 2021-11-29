@@ -1,6 +1,6 @@
 'use strict'
 
-import { ILogger } from './ilogger'
+// import { ILogger } from './ilogger'
 
-export default ILogger
-export { ILogger }
+// export default ILogger
+// export { ILogger }

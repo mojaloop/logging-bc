@@ -39,13 +39,13 @@
 
 /* eslint-disable no-console */
 
-import { ILogger } from '@mojaloop/logging-bc-common'
+import { ILogger } from './ilogger'
 
 export class ConsoleLogger implements ILogger {
-  // trace(...anything) {
-  //  console.trace.apply(this, anything);
-  // }
-  private readonly _logger: any
+
+  isTraceEnabled (): boolean {
+    return true
+  }
 
   isDebugEnabled (): boolean {
     return true
@@ -67,12 +67,17 @@ export class ConsoleLogger implements ILogger {
     return true
   }
 
+  trace (message?: any, ...optional: any[]): void {
+    // @ts-expect-error
+    console.log.apply(this, arguments)
+  }
+
   debug (message?: any, ...optional: any[]): void {
     // @ts-expect-error
     console.log.apply(this, arguments)
   }
 
-  info (message?: any, ...optionalParams: any[]): void {
+  info (message?: any, ...optional: any[]): void {
     // @ts-expect-error
     console.info.apply(this, arguments)
   }
