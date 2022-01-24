@@ -32,7 +32,7 @@
 
 /* eslint-disable no-console */
 
-import { ILogger } from './ilogger'
+import { ILogger } from '@mojaloop/logging-bc-logging-types-lib'
 import * as Winston from 'winston'
 
 export enum LogLevel {

@@ -45,6 +45,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.1",
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^27.0.3",
     "@types/node": "^16.11.9",

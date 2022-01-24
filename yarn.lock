@@ -1523,6 +1523,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc-logging-client-lib@workspace:modules/logging-client-lib"
   dependencies:
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
     "@types/dotenv": ^8.2.0
     "@types/jest": ^27.0.3
     "@types/node": ^16.11.9
@@ -1555,6 +1556,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc-logging-svc@workspace:modules/logging-svc"
   dependencies:
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
     "@types/dotenv": ^8.2.0
     "@types/jest": ^27.0.3
     "@types/node": ^16.11.9
@@ -1582,6 +1584,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib":
+  version: 0.0.0-use.local
+  resolution: "@mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib"
+  dependencies:
+    "@types/dotenv": ^8.2.0
+    "@types/jest": ^27.0.3
+    "@types/node": ^16.11.9
+    "@types/node-cache": ^4.2.5
+    "@typescript-eslint/eslint-plugin": ^5.4.0
+    commander: ^8.3.0
+    dotenv: ^10.0.0
+    eslint: ^8.3.0
+    eslint-config-prettier: ^8.3.0
+    eslint-config-standard-with-typescript: ^21.0.1
+    eslint-plugin-import: ^2.25.3
+    eslint-plugin-node: ^11.1.0
+    eslint-plugin-promise: ^5.1.1
+    eslint-plugin-standard: ^5.0.0
+    faucet: 0.0.1
+    jest: ^27.3.1
+    jest-junit: ^13.0.0
+    npm-audit-resolver: ^2.3.1
+    npm-check-updates: ^12.0.2
+    nyc: ^15.1.0
+    pre-commit: ^1.2.2
+    ts-jest: ^27.0.7
+    typedoc: ^0.22.9
+    typescript: ^4.5.0
+    winston: ^3.3.3
+  languageName: unknown
+  linkType: soft
+
 "@mojaloop/logging-bc@workspace:.":
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc@workspace:."
@@ -1590,6 +1624,13 @@ __metadata:
     lerna: ^4.0.0
   languageName: unknown
   linkType: soft
+
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.0.1"
+  checksum: 844cad7a9a76e5aa5c76228ecd61415ecf0c37717bf46c8d6489a8e0b66b5f8716aa1d260d09612a2960fbdc133322105f002ad6021116f4be8e584ba585f3c9
+  languageName: node
+  linkType: hard
 
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
