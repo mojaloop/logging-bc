@@ -33,43 +33,53 @@
  - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
-******/
+ ******/
 
 'use strict'
 
 /* eslint-disable no-console */
 
-import { ILogger } from '@mojaloop/logging-bc-logging-types-lib'
-import { LoggerBase } from './logger_base'
+import { ILogger, LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
 
-export class ConsoleLogger extends LoggerBase implements ILogger {
-  trace (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isTraceEnabled() && console.log.apply(this, arguments)
-  }
+export abstract class LoggerBase implements ILogger {
+    protected _logLevel: LogLevel = LogLevel.DEBUG // default
 
-  debug (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isDebugEnabled() && console.log.apply(this, arguments)
-  }
+    setLogLevel (logLevel: LogLevel): void {
+        this._logLevel = logLevel
+    }
 
-  info (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isInfoEnabled() && console.info.apply(this, arguments)
-  }
+    getLogLevel (): LogLevel {
+        return this._logLevel
+    }
 
-  warn (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isWarnEnabled() && console.warn.apply(this, arguments)
-  }
+    isTraceEnabled (): boolean {
+        return this._logLevel === LogLevel.TRACE
+    }
 
-  error (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isErrorEnabled() && console.error.apply(this, arguments)
-  }
+    isDebugEnabled (): boolean {
+        return this._logLevel === LogLevel.DEBUG || this.isTraceEnabled()
+    }
 
-  fatal (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isFatalEnabled() && console.error.apply(this, arguments)
-  }
+    isInfoEnabled (): boolean {
+        return this._logLevel === LogLevel.INFO || this.isDebugEnabled()
+    }
+
+    isWarnEnabled (): boolean {
+        return this._logLevel === LogLevel.WARN || this.isInfoEnabled()
+    }
+
+    isErrorEnabled (): boolean {
+        return this._logLevel === LogLevel.ERROR || this.isWarnEnabled()
+    }
+
+    isFatalEnabled (): boolean {
+        return this._logLevel === LogLevel.FATAL || this.isErrorEnabled()
+    }
+
+    abstract trace (message?: any, ...optionalParams: any[]): void
+    abstract debug (message?: any, ...optionalParams: any[]): void
+    abstract info (message?: any, ...optionalParams: any[]): void
+    abstract warn (message?: any, ...optionalParams: any[]): void
+    abstract error (message?: any, ...optionalParams: any[]): void
+    abstract fatal (message?: any, ...optionalParams: any[]): void
 }

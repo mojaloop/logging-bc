@@ -37,7 +37,12 @@
 
 'use strict'
 
-export type ILogger = {
+import { LogLevel } from './enums'
+
+export interface ILogger {
+  // programmatically set log level
+  setLogLevel: (logLevel: LogLevel) => void
+  getLogLevel: () => LogLevel
 
   // methods to check logging level
   isTraceEnabled: () => boolean
