@@ -1523,6 +1523,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc-logging-client-lib@workspace:modules/logging-client-lib"
   dependencies:
+    "@mojaloop/logging-bc-logging-types-lib": ^0.0.1
     "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
     "@types/dotenv": ^8.2.0
     "@types/jest": ^27.0.3
@@ -1584,7 +1585,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib":
+"@mojaloop/logging-bc-logging-types-lib@^0.0.1, @mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib":
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib"
   dependencies:

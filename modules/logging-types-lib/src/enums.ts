@@ -33,43 +33,15 @@
  - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
-******/
+ ******/
 
 'use strict'
 
-/* eslint-disable no-console */
-
-import { ILogger } from '@mojaloop/logging-bc-logging-types-lib'
-import { LoggerBase } from './logger_base'
-
-export class ConsoleLogger extends LoggerBase implements ILogger {
-  trace (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isTraceEnabled() && console.log.apply(this, arguments)
-  }
-
-  debug (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isDebugEnabled() && console.log.apply(this, arguments)
-  }
-
-  info (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isInfoEnabled() && console.info.apply(this, arguments)
-  }
-
-  warn (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isWarnEnabled() && console.warn.apply(this, arguments)
-  }
-
-  error (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isErrorEnabled() && console.error.apply(this, arguments)
-  }
-
-  fatal (message?: any, ...optional: any[]): void {
-    // @ts-expect-error
-    this.isFatalEnabled() && console.error.apply(this, arguments)
-  }
+export enum LogLevel {
+    TRACE = 'trace',
+    DEBUG = 'debug',
+    INFO = 'info',
+    WARN = 'warn',
+    ERROR = 'error',
+    FATAL = 'fatal'
 }

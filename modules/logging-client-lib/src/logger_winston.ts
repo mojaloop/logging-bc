@@ -32,19 +32,11 @@
 
 /* eslint-disable no-console */
 
-import { ILogger } from '@mojaloop/logging-bc-logging-types-lib'
+import { ILogger, LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
+import { LoggerBase } from './logger_base'
 import * as Winston from 'winston'
 
-export enum LogLevel {
-  TRACE = 'trace',
-  DEBUG = 'debug',
-  INFO = 'info',
-  WARN = 'warn',
-  ERROR = 'error',
-  FATAL = 'fatal'
-}
-
-const logLevelPriority: Winston.config.AbstractConfigSetLevels = { 
+const logLevelPriority: Winston.config.AbstractConfigSetLevels = {
   fatal: 0,
   error: 1,
   warn: 2,
@@ -53,13 +45,16 @@ const logLevelPriority: Winston.config.AbstractConfigSetLevels = {
   trace: 5
 }
 
-export class WinstonLogger implements ILogger {
+export class WinstonLogger extends LoggerBase implements ILogger {
 
   private readonly _logger: any
 
-  constructor(level?: LogLevel) {
+  constructor (level?: LogLevel) {
+    super()
+    if (level !== undefined) this.setLogLevel(level)
+
     this._logger = Winston.createLogger({
-      level,
+      level: this._logLevel,
       levels: logLevelPriority,
       format: Winston.format.json(),
       transports: [
@@ -68,75 +63,47 @@ export class WinstonLogger implements ILogger {
     })
   }
 
-  isTraceEnabled (): boolean {
-    return this._logger.isLevelEnabled(LogLevel.TRACE)
-  }
-
-  isDebugEnabled (): boolean {
-    return this._logger.isLevelEnabled(LogLevel.DEBUG)
-  }
-
-  isInfoEnabled (): boolean {
-    return this._logger.isLevelEnabled(LogLevel.INFO)
-  }
-
-  isWarnEnabled (): boolean {
-    return this._logger.isLevelEnabled(LogLevel.WARN)
-  }
-
-  isErrorEnabled (): boolean {
-    return this._logger.isLevelEnabled(LogLevel.ERROR)
-  }
-
-  isFatalEnabled (): boolean {
-    return this._logger.isLevelEnabled(LogLevel.FATAL)
-  }
-
-  trace (message?: any, ...meta: any[]): void {
+  private _log (message?: any, ...meta: any[]): void {
     this._logger.log({
-      level: LogLevel.TRACE, 
-      message, 
-      meta
-    })
-  }
-
-  debug (message?: any, ...meta: any[]): void {
-    this._logger.log({
-      level: LogLevel.DEBUG, 
-      message, 
-      meta
-    })
-  }
-
-  info (message?: any, ...meta: any[]): void {
-    this._logger.log({
-      level: LogLevel.INFO, 
+      level: this._logLevel,
       message,
       meta
     })
   }
 
+  trace (message?: any, ...meta: any[]): void {
+    if (!this.isTraceEnabled()) return
+
+    this._log(message, ...meta)
+  }
+
+  debug (message?: any, ...meta: any[]): void {
+    if (!this.isDebugEnabled()) return
+
+    this._log(message, ...meta)
+  }
+
+  info (message?: any, ...meta: any[]): void {
+    if (!this.isInfoEnabled()) return
+
+    this._log(message, ...meta)
+  }
+
   warn (message?: any, ...meta: any[]): void {
-    this._logger.log({
-      level: LogLevel.WARN, 
-      message, 
-      meta
-    })
+    if (!this.isWarnEnabled()) return
+
+    this._log(message, ...meta)
   }
 
   error (message?: any, ...meta: any[]): void {
-    this._logger.log({
-      level: LogLevel.ERROR, 
-      message, 
-      meta
-    })
+    if (!this.isErrorEnabled()) return
+
+    this._log(message, ...meta)
   }
 
   fatal (message?: any, ...meta: any[]): void {
-    this._logger.log({
-      level: LogLevel.FATAL, 
-      message, 
-      meta
-    })
+    if (!this.isFatalEnabled()) return
+
+    this._log(message, ...meta)
   }
 }

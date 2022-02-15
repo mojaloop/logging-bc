@@ -1,7 +1,9 @@
 'use strict'
 
 import { ILogger } from './ilogger'
+import { LogLevel } from './enums'
 
-export { 
+export {
   ILogger,
+  LogLevel
 }
