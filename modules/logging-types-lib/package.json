@@ -1,9 +1,9 @@
 {
-  "name": "@mojaloop/logging-bc-logging-svc",
+  "name": "@mojaloop/logging-bc-logging-types-lib",
   "version": "0.0.1",
-  "description": "mojaloop logging service",
+  "description": "mojaloop logging types lib",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/mojaloop/logging-bc/tree/main/modules/logging-svc",
+  "homepage": "https://github.com/mojaloop/logging-bc/tree/main/modules/logging-types-lib",
   "bugs": {
     "url": "https://github.com/mojaloop/logging-bc/issues#readme"
   },
@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "start": "yarn run service",
-    "service": "tsc && yarn node dist/index.js --config ../../.env",
+    "service": "tsc && node dist/index.js --config ../../.env",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rm -Rf dist",
@@ -41,10 +41,10 @@
   },
   "dependencies": {
     "commander": "^8.3.0",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.1",
     "@types/dotenv": "^8.2.0",
     "@types/jest": "^27.0.3",
     "@types/node": "^16.11.9",

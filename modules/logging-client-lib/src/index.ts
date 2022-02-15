@@ -1,4 +1,9 @@
 'use strict'
 
-const message: string = 'Hello, World!'
-console.log(message) // eslint-disable-line no-console
+import { ConsoleLogger } from "./logger_console"
+import { WinstonLogger } from "./logger_winston"
+
+export { 
+  ConsoleLogger,
+  WinstonLogger
+}
