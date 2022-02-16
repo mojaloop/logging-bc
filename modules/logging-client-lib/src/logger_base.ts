@@ -39,7 +39,8 @@
 
 /* eslint-disable no-console */
 
-import { ILogger, LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
+import { ILogger } from './ilogger'
+import { LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
 
 export abstract class LoggerBase implements ILogger {
     protected _logLevel: LogLevel = LogLevel.DEBUG // default

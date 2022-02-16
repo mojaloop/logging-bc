@@ -31,8 +31,8 @@
 'use strict'
 
 /* eslint-disable no-console */
-
-import { ILogger, LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
+import { ILogger } from './ilogger'
+import { LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
 import { LoggerBase } from './logger_base'
 import * as Winston from 'winston'
 

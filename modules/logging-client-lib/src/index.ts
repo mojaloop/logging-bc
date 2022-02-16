@@ -1,9 +1,11 @@
 'use strict'
 
-import { ConsoleLogger } from "./logger_console"
-import { WinstonLogger } from "./logger_winston"
+import { ILogger } from './ilogger'
+import { ConsoleLogger } from './logger_console'
+import { WinstonLogger } from './logger_winston'
 
-export { 
+export {
+  ILogger,
   ConsoleLogger,
   WinstonLogger
 }

@@ -38,8 +38,7 @@
 'use strict'
 
 /* eslint-disable no-console */
-
-import { ILogger } from '@mojaloop/logging-bc-logging-types-lib'
+import { ILogger } from './ilogger'
 import { LoggerBase } from './logger_base'
 
 export class ConsoleLogger extends LoggerBase implements ILogger {
