@@ -37,7 +37,7 @@
 
 'use strict'
 
-import { LogLevel } from '@mojaloop/logging-bc-logging-types-lib/dist/enums'
+import { LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
 
 export interface ILogger {
   // programmatically set log level
