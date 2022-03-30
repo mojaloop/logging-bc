@@ -22,8 +22,8 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
 
- * ModusBox
- - Miguel de Barros <miguel.debarros@modusbox.com>
+ * Coil
+ - Jason Bruwer <jason.bruwer@coil.com>
 
  --------------
 ******/
