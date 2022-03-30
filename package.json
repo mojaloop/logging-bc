@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/logging-bc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "mojaloop logging bounded context.",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/logging-bc",
@@ -9,7 +9,8 @@
     "url": "https://github.com/mojaloop/logging-bc/issues#readme"
   },
   "contributors": [
-    "Miguel de Barros <miguel.debarros@modusbox.com>"
+    "Miguel de Barros <miguel.debarros@modusbox.com>",
+    "Jason Bruwer <jason.bruwer@coil.com>"
   ],
   "scripts": {
     "prepare": "husky install",
