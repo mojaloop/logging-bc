@@ -54,13 +54,6 @@ let logDispatch : MLKafkaLoggerDispatcher;
 
 const TOPIC_NAME = 'nodejs-rdkafka-client-integration-test-log-bc-topic'
 
-const sampleLE: LogEntry = {
-  level: LogLevel.DEBUG,
-  logTimestamp: Date.now(),
-  message: 'Logger message. Hello World!',
-  meta: ['hello', 'world', '!']
-}
-
 describe('nodejs-rdkafka-log-bc', () => {
 
   beforeAll(async () => {
@@ -86,7 +79,7 @@ describe('nodejs-rdkafka-log-bc', () => {
     await kafkaConsumer.destroy(false)
   })
 
-  test('produce and consume audit-bc using kafka', async () => {
+  test('produce and consume log-bc using kafka', async () => {
     let receivedMessages = 0;
     async function handleLogMsg (message: IMessage): Promise<void> {
       receivedMessages++
@@ -99,8 +92,8 @@ describe('nodejs-rdkafka-log-bc', () => {
     await kafkaConsumer.connect()
     await kafkaConsumer.start()
 
-    await logDispatch.debug([sampleLE])
-    await logDispatch.info([sampleLE])
+    await logDispatch.debug('Logger message. Hello World! Lets debug.')
+    await logDispatch.info('Logger message. Hello World! Lets info.')
 
     // Wait 1 second to receive the event
     await new Promise(f => setTimeout(f, 1000));

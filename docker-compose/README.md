@@ -1,6 +1,6 @@
-# auditing-bc `docker-compose`
+# logging-bc `docker-compose`
 
-#### Docker Compose for Auditing
+#### Docker Compose for Logging
 > Startup, Kafka, Elasticsearch and Kibana. 
 
 Follow the steps below prior to startup:
@@ -69,7 +69,7 @@ curl -X PUT "localhost:9200/mjl-logging?pretty" -H 'Content-Type: application/js
       "level":  { "type": "keyword"  },
       "logTimestamp": { "type": "date" },
       "message":  { "type": "text"  },
-      "meta":  { "type": "object"  }
+      "meta":  { "type": "keyword"  }
     }
   }
 }
@@ -85,7 +85,7 @@ curl -X PUT "localhost:9200/mjl-logging?pretty" -H 'Content-Type: application/js
 
 #### Monitor Kafka Events _(Download the Kafka clients from https://kafka.apache.org/downloads.html)_
 ```shell
-./kafka-console-consumer.sh --topic nodejs-rdkafka-svc-integration-test-audit-bc-topic --from-beginning --bootstrap-server localhost:9092
+./kafka-console-consumer.sh --topic nodejs-rdkafka-svc-integration-test-log-bc-topic --from-beginning --bootstrap-server localhost:9092
 ```
 
 ### Shutdown
@@ -93,3 +93,4 @@ curl -X PUT "localhost:9200/mjl-logging?pretty" -H 'Content-Type: application/js
 docker-compose down -v
 ```
 
+# TODO @jason Add the ES Dashboard templates once completed.

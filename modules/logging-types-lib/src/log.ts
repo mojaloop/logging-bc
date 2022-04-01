@@ -32,7 +32,7 @@
 
 import { LogLevel } from './enums'
 
-export declare type LogEntry = {
+export declare type LogEntry = {//TODO @jason, also add log level with a numeric value. enum index.
     level: LogLevel,
     logTimestamp: number,
     message: string,

@@ -67,16 +67,14 @@ export class MLKafkaLoggerDispatcher extends LoggerBase implements ILogger {
     const logEntry : LogEntry = {
       level: this.getLogLevel(),
       logTimestamp: Date.now(),
-      message: message,
+      message: ''+message,
       meta: meta
     };
     this.kafkaProducer.send({
       topic: this.kafkaTopic,
       value: logEntry,
       key: null,
-      headers: [
-        { key1: Buffer.from('testStr') }
-      ]
+      headers: []
     })
   }
 

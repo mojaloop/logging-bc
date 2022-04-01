@@ -59,7 +59,7 @@ export class MLElasticsearchLogStorage implements IStorage {
         document: {
           level: itm.level,
           logTimestamp: itm.logTimestamp,
-          message: itm.message,
+          message: ''+itm.message,
           meta: itm.meta
         }
       });

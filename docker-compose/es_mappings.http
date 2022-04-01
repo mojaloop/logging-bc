@@ -15,7 +15,7 @@ Authorization: Basic elastic 123@Edd!1234SS
       "level":  { "type": "keyword"  },
       "logTimestamp": { "type": "date" },
       "message":  { "type": "text"  },
-      "meta":  { "type": "object"  }
+      "meta":  { "type": "keyword"  }
     }
   }
 }

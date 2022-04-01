@@ -50,13 +50,6 @@ let logDispatch : MLKafkaLoggerDispatcher;
 
 const TOPIC_NAME = 'nodejs-rdkafka-svc-integration-test-log-bc-topic'
 
-const sampleLE: LogEntry = {
-  level: LogLevel.DEBUG,
-  logTimestamp: Date.now(),
-  message: 'Logger message. Hello World!',
-  meta: ['hello', 'world', '!']
-}
-
 describe('nodejs-rdkafka-log-bc', () => {
   jest.setTimeout(10000);
 
@@ -101,8 +94,8 @@ describe('nodejs-rdkafka-log-bc', () => {
     const logEvtHandlerForES = new MLLogEventHandler(logger, elasticStorage, consumerOptions, TOPIC_NAME);
     await logEvtHandlerForES.init();
 
-    await logDispatch.info([sampleLE]);
-    await logDispatch.debug([sampleLE]);
+    await logDispatch.info('Logger message. Hello World! Info.');
+    await logDispatch.debug('Logger message. Hello World! Debug.');
     await new Promise(f => setTimeout(f, 2000));
 
     //TODO Test condition here... Perform a Search...
