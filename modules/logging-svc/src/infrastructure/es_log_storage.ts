@@ -30,7 +30,7 @@
 
 'use strict'
 
-import { LogEntry } from '@mojaloop/logging-bc-logging-types-lib';
+import {LogEntry, LogLevel} from '@mojaloop/logging-bc-logging-types-lib';
 import { IStorage } from "../application/log_event_handler";
 import { Client } from '@elastic/elasticsearch';
 import { ClientOptions } from "@elastic/elasticsearch/lib/client";
@@ -58,6 +58,7 @@ export class MLElasticsearchLogStorage implements IStorage {
         index: this.index,
         document: {
           level: itm.level,
+          level_numeric: Object.keys(LogLevel).indexOf(itm.level.toUpperCase()),
           logTimestamp: itm.logTimestamp,
           message: ''+itm.message,
           meta: itm.meta

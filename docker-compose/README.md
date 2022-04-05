@@ -58,8 +58,7 @@ docker-compose up -d
 https://www.elastic.co/guide/en/elasticsearch/reference/8.1/explicit-mapping.html
 List of mapping types:
 https://www.elastic.co/guide/en/elasticsearch/reference/8.1/mapping-types.html
-       
-> TODO @jason Need to add mapping... 
+
 > 
 ```shell
 curl -X PUT "localhost:9200/mjl-logging?pretty" -H 'Content-Type: application/json' -d'
@@ -67,6 +66,7 @@ curl -X PUT "localhost:9200/mjl-logging?pretty" -H 'Content-Type: application/js
   "mappings": {
     "properties": {
       "level":  { "type": "keyword"  },
+      "level_numeric":  { "type": "numeric"  },
       "logTimestamp": { "type": "date" },
       "message":  { "type": "text"  },
       "meta":  { "type": "keyword"  }
@@ -93,4 +93,9 @@ curl -X PUT "localhost:9200/mjl-logging?pretty" -H 'Content-Type: application/js
 docker-compose down -v
 ```
 
-# TODO @jason Add the ES Dashboard templates once completed.
+### Dashboard
+The log dashboard may be imported from Kibana. Follow the steps below:
+1. Navigate to http://localhost:5601/app/management/kibana/objects
+2. Click import and select `log-dashboard.ndjson`
+3. Select appropriate options.
+4. Import!

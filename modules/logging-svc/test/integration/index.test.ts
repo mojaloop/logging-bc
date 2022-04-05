@@ -40,6 +40,7 @@ import {
 import {ConsoleLogger, MLKafkaLoggerDispatcher} from "@mojaloop/logging-bc-logging-client-lib";
 import {MLElasticsearchLogStorage} from "../../src/infrastructure/es_log_storage";
 import {MLLogEventHandler} from "../../dist/application/log_event_handler";
+import { Client } from '@elastic/elasticsearch';
 
 const logger: ConsoleLogger = new ConsoleLogger()
 
@@ -79,27 +80,38 @@ describe('nodejs-rdkafka-log-bc', () => {
   test('produce and consume log-bc using kafka and elasticsearch', async () => {
     // Startup Handler
     //Elastic
-    const elasticStorage = new MLElasticsearchLogStorage(
-        { node: 'https://localhost:9200',
-          auth: {
-            username: "elastic",
-            password: process.env.elasticsearch_password || "123@Edd!1234SS",
-          },
-          tls: {
-            ca: process.env.elasticsearch_certificate,
-            rejectUnauthorized: false,
-          }
-        }
-    );
+    const elasticOpts = { node: 'https://localhost:9200',
+      auth: {
+        username: "elastic",
+        password: process.env.elasticsearch_password || "123@Edd!1234SS",
+      },
+      tls: {
+        ca: process.env.elasticsearch_certificate,
+        rejectUnauthorized: false,
+      }
+    };
+    const elasticStorage = new MLElasticsearchLogStorage(elasticOpts);
     const logEvtHandlerForES = new MLLogEventHandler(logger, elasticStorage, consumerOptions, TOPIC_NAME);
     await logEvtHandlerForES.init();
 
     await logDispatch.info('Logger message. Hello World! Info.');
     await logDispatch.debug('Logger message. Hello World! Debug.');
+    await logDispatch.warn('Logger message. Hello World! Warn.');
     await new Promise(f => setTimeout(f, 2000));
 
-    //TODO Test condition here... Perform a Search...
+    const esClient = new Client(elasticOpts);
+    const result = await esClient.search({
+      index: 'mjl-logging',
+      query: {
+        match: {
+          level: 'debug'
+        }
+      }
+    });
 
+    expect(result.hits.hits.length).toBeGreaterThan(0);
+
+    await esClient.close();
     await logEvtHandlerForES.destroy();
   })
 })

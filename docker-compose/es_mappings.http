@@ -13,6 +13,7 @@ Authorization: Basic elastic 123@Edd!1234SS
   "mappings": {
     "properties": {
       "level":  { "type": "keyword"  },
+      "level_numeric":  { "type": "numeric"  },
       "logTimestamp": { "type": "date" },
       "message":  { "type": "text"  },
       "meta":  { "type": "keyword"  }

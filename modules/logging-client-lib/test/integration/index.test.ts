@@ -98,6 +98,6 @@ describe('nodejs-rdkafka-log-bc', () => {
     // Wait 1 second to receive the event
     await new Promise(f => setTimeout(f, 1000));
 
-    expect(receivedMessages).toEqual(2)
+    expect(receivedMessages).toBeGreaterThan(1);
   })
 })
