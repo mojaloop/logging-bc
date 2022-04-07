@@ -422,6 +422,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@elastic/elasticsearch@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@elastic/elasticsearch@npm:8.1.0"
+  dependencies:
+    "@elastic/transport": ^8.0.2
+    tslib: ^2.3.0
+  checksum: 9c4b8970380c32b6578bb09bd7009366c625baf2c4d9908a404c836c7e6c654e1dc9101800e874ab11cf17932060bfbb7ec0bc14e318a8aa5ed2deecf686a0f8
+  languageName: node
+  linkType: hard
+
+"@elastic/transport@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "@elastic/transport@npm:8.0.2"
+  dependencies:
+    debug: ^4.3.2
+    hpagent: ^0.1.2
+    ms: ^2.1.3
+    secure-json-parse: ^2.4.0
+    tslib: ^2.3.0
+    undici: ^4.14.1
+  checksum: 88b8b16f1c504aec09dfb55e853f79396d39e1bfdedcb921e5e9ec4eb487c23a2b88e2d8a154a2ce8b006eb1d9dfde42a2e95bf63df2bb1b36716ad66168054f
+  languageName: node
+  linkType: hard
+
 "@eslint/eslintrc@npm:^1.0.4":
   version: 1.0.4
   resolution: "@eslint/eslintrc@npm:1.0.4"
@@ -1488,11 +1512,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mojaloop/logging-bc-logging-client-lib@workspace:modules/logging-client-lib":
+"@mojaloop/logging-bc-logging-client-lib@^0.0.6, @mojaloop/logging-bc-logging-client-lib@workspace:modules/logging-client-lib":
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc-logging-client-lib@workspace:modules/logging-client-lib"
   dependencies:
-    "@mojaloop/logging-bc-logging-types-lib": ^0.0.1
+    "@mojaloop/logging-bc-logging-types-lib": ^0.0.2
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.2
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.4
     "@types/jest": ^27.0.3
     "@types/node": ^16.11.9
     "@types/node-cache": ^4.2.5
@@ -1518,11 +1544,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@mojaloop/logging-bc-logging-client-lib@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@mojaloop/logging-bc-logging-client-lib@npm:0.0.1"
+  dependencies:
+    commander: ^8.3.0
+    dotenv: ^10.0.0
+    winston: ^3.3.3
+  checksum: 1d4b029a39a0dfb41d59c7b3aaafb60b68ed06965af752c3cd561ac220b304b955a63f3d440ed4d5765549d3acd77b0d65aee0a05d39b34077fd40ef3555716b
+  languageName: node
+  linkType: hard
+
 "@mojaloop/logging-bc-logging-svc@workspace:modules/logging-svc":
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc-logging-svc@workspace:modules/logging-svc"
   dependencies:
-    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
+    "@elastic/elasticsearch": ^8.1.0
+    "@mojaloop/logging-bc-logging-client-lib": ^0.0.6
+    "@mojaloop/logging-bc-logging-types-lib": ^0.0.2
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.2
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": ^0.0.4
     "@types/dotenv": ^8.2.0
     "@types/jest": ^27.0.3
     "@types/node": ^16.11.9
@@ -1550,7 +1591,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@mojaloop/logging-bc-logging-types-lib@^0.0.1, @mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib":
+"@mojaloop/logging-bc-logging-types-lib@^0.0.2, @mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib":
   version: 0.0.0-use.local
   resolution: "@mojaloop/logging-bc-logging-types-lib@workspace:modules/logging-types-lib"
   dependencies:
@@ -1591,6 +1632,26 @@ __metadata:
   version: 0.0.1
   resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.0.1"
   checksum: 844cad7a9a76e5aa5c76228ecd61415ecf0c37717bf46c8d6489a8e0b66b5f8716aa1d260d09612a2960fbdc133322105f002ad6021116f4be8e584ba585f3c9
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-messaging-types-lib@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "@mojaloop/platform-shared-lib-messaging-types-lib@npm:0.0.2"
+  checksum: e506b008a1a4a1eeab1f8add1fb52cd7a4bb43395debdc0f6571d0638b03afc79ef6fdfbdca34cf1d533046db3a77664fe63285a869c1f28b492b3e5da623b96
+  languageName: node
+  linkType: hard
+
+"@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:^0.0.4":
+  version: 0.0.4
+  resolution: "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib@npm:0.0.4"
+  dependencies:
+    "@mojaloop/logging-bc-logging-client-lib": ^0.0.1
+    "@mojaloop/platform-shared-lib-messaging-types-lib": ^0.0.1
+    node-rdkafka: ^2.12.0
+  peerDependencies:
+    "@mojaloop/logging-bc-logging-client-lib": "*"
+  checksum: 55bbcffd211aff2e9c794b838cb36d74ebefb706832b97ba9311a1fd9a8dbcbf7d4ee836d5ddec0f20bafd39ced2843f80013d479ceadfa2d259a47d67cc5956
   languageName: node
   linkType: hard
 
@@ -2733,6 +2794,15 @@ __metadata:
   version: 2.2.2
   resolution: "before-after-hook@npm:2.2.2"
   checksum: dc2e1ffe389e5afbef2a46790b1b5a50247ed57aba67649cfa9ec2552d248cc9278f222e72fb5a8ff59bbb39d78fbaa97e7234ead0c6b5e8418b67a8644ce207
+  languageName: node
+  linkType: hard
+
+"bindings@npm:^1.3.1":
+  version: 1.5.0
+  resolution: "bindings@npm:1.5.0"
+  dependencies:
+    file-uri-to-path: 1.0.0
+  checksum: 65b6b48095717c2e6105a021a7da4ea435aa8d3d3cd085cb9e85bcb6e5773cf318c4745c3f7c504412855940b585bdf9b918236612a1c7a7942491de176f1ae7
   languageName: node
   linkType: hard
 
@@ -4584,6 +4654,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-uri-to-path@npm:1.0.0":
+  version: 1.0.0
+  resolution: "file-uri-to-path@npm:1.0.0"
+  checksum: b648580bdd893a008c92c7ecc96c3ee57a5e7b6c4c18a9a09b44fb5d36d79146f8e442578bc0e173dc027adf3987e254ba1dfd6e3ec998b7c282873010502144
+  languageName: node
+  linkType: hard
+
 "fill-range@npm:^7.0.1":
   version: 7.0.1
   resolution: "fill-range@npm:7.0.1"
@@ -5229,6 +5306,13 @@ __metadata:
   dependencies:
     lru-cache: ^6.0.0
   checksum: d1b2d7720398ce96a788bd38d198fbddce089a2381f63cfb01743e6c7e5aed656e5547fe74090fb9fe53b2cb785b0e8c9ebdddadff48ed26bb471dd23cd25458
+  languageName: node
+  linkType: hard
+
+"hpagent@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "hpagent@npm:0.1.2"
+  checksum: 1918518ab937d9fa615a47b94489e23662547bc1edf27069ee9bf40bfefb94da65eb142b6f42336b4b0752fce87f66c284d92b97340fd2a90b24aa3616b5450d
   languageName: node
   linkType: hard
 
@@ -7356,7 +7440,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ms@npm:^2.0.0, ms@npm:^2.1.1":
+"ms@npm:^2.0.0, ms@npm:^2.1.1, ms@npm:^2.1.3":
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
@@ -7380,6 +7464,15 @@ __metadata:
   version: 0.0.8
   resolution: "mute-stream@npm:0.0.8"
   checksum: ff48d251fc3f827e5b1206cda0ffdaec885e56057ee86a3155e1951bc940fd5f33531774b1cc8414d7668c10a8907f863f6561875ee6e8768931a62121a531a1
+  languageName: node
+  linkType: hard
+
+"nan@npm:^2.14.0":
+  version: 2.15.0
+  resolution: "nan@npm:2.15.0"
+  dependencies:
+    node-gyp: latest
+  checksum: 33e1bb4dfca447fe37d4bb5889be55de154828632c8d38646db67293a21afd61ed9909cdf1b886214a64707d935926c4e60e2b09de9edfc2ad58de31d6ce8f39
   languageName: node
   linkType: hard
 
@@ -7503,6 +7596,17 @@ __metadata:
   dependencies:
     process-on-spawn: ^1.0.0
   checksum: 4586f91ac7417b33accce0ac629fb60f642d0c8d212b3c536dc3dda37fe54f8a3b858273380e1036e41a65d85470332c358315d2288e6584260d620fb4b00fb3
+  languageName: node
+  linkType: hard
+
+"node-rdkafka@npm:^2.12.0":
+  version: 2.12.0
+  resolution: "node-rdkafka@npm:2.12.0"
+  dependencies:
+    bindings: ^1.3.1
+    nan: ^2.14.0
+    node-gyp: latest
+  checksum: 24332b8d29c7ed3aec6281c93cab5a6d2407d7f0b014a9d6ed0cc64ac8f4da4e51690de398ac3af11ea4a4dca9efb133c09acf4bf5ed4538fc9067c9e9c7bb0c
   languageName: node
   linkType: hard
 
@@ -9145,6 +9249,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"secure-json-parse@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "secure-json-parse@npm:2.4.0"
+  checksum: efaafcaa08a4646ca829b29168474f57fb289a0ca7a1d77b66b55a0292785bc6eb9143b21cfc50b37dd12a823c25b12aa1771f18314ed5a616a1f8f12a318533
+  languageName: node
+  linkType: hard
+
 "semver-diff@npm:^3.1.1":
   version: 3.1.1
   resolution: "semver-diff@npm:3.1.1"
@@ -10069,6 +10180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tslib@npm:^2.3.0":
+  version: 2.3.1
+  resolution: "tslib@npm:2.3.1"
+  checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
+  languageName: node
+  linkType: hard
+
 "tsutils@npm:^3.21.0":
   version: 3.21.0
   resolution: "tsutils@npm:3.21.0"
@@ -10248,6 +10366,13 @@ __metadata:
     has-symbols: ^1.0.2
     which-boxed-primitive: ^1.0.2
   checksum: 89d950e18fb45672bc6b3c961f1e72c07beb9640c7ceed847b571ba6f7d2af570ae1a2584cfee268b9d9ea1e3293f7e33e0bc29eaeb9f8e8a0bab057ff9e6bba
+  languageName: node
+  linkType: hard
+
+"undici@npm:^4.14.1":
+  version: 4.16.0
+  resolution: "undici@npm:4.16.0"
+  checksum: 5e88c2b3381085e25ed1d1a308610ac7ee985f478ac705af7a8e03213536e10f73ef8dd8d85e6ed38948d1883fa0ae935e04357c317b0f5d3d3c0211d0c8c393
   languageName: node
   linkType: hard
 
