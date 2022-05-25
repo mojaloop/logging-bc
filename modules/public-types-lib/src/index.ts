@@ -33,30 +33,53 @@
  - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
-******/
+ ******/
 
-'use strict'
+"use strict"
 
-import { LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
+export {ConsoleLogger} from "./console_logger";
 
-export interface ILogger {
+export enum LogLevel {
+  TRACE = "trace",
+  DEBUG = "debug",
+  INFO = "info",
+  WARN = "warn",
+  ERROR = "error",
+  FATAL = "fatal"
+}
+
+//TODO @jason, also add log level with a numeric value. enum index.
+export declare type LogEntry = {
+  level: LogLevel,
+  timestamp: number,
+  bcName:string,
+  appName:string,
+  appVersion:string
+  component:string | null,
+  message: string,
+  meta: any
+}
+
+export declare type ILogger = {
   // programmatically set log level
-  setLogLevel: (logLevel: LogLevel) => void
-  getLogLevel: () => LogLevel
+  setLogLevel: (logLevel: LogLevel) => void;
+  getLogLevel: () => LogLevel;
+
+  createChild(componentName:string):ILogger;
 
   // methods to check logging level
-  isTraceEnabled: () => boolean
-  isDebugEnabled: () => boolean
-  isInfoEnabled: () => boolean
-  isWarnEnabled: () => boolean
-  isErrorEnabled: () => boolean
-  isFatalEnabled: () => boolean
+  isTraceEnabled: () => boolean;
+  isDebugEnabled: () => boolean;
+  isInfoEnabled: () => boolean;
+  isWarnEnabled: () => boolean;
+  isErrorEnabled: () => boolean;
+  isFatalEnabled: () => boolean;
 
   // methods to handle logging per level
-  trace: (message?: any, ...optionalParams: any[]) => void
-  debug: (message?: any, ...optionalParams: any[]) => void
-  info: (message?: any, ...optionalParams: any[]) => void
-  warn: (message?: any, ...optionalParams: any[]) => void
-  error: (message?: any, ...optionalParams: any[]) => void
-  fatal: (message?: any, ...optionalParams: any[]) => void
+  trace: (message?: any, ...optionalParams: any[]) => void;
+  debug: (message?: any, ...optionalParams: any[]) => void;
+  info: (message?: any, ...optionalParams: any[]) => void;
+  warn: (message?: any, ...optionalParams: any[]) => void;
+  error: (message?: any, ...optionalParams: any[]) => void;
+  fatal: (message?: any, ...optionalParams: any[]) => void;
 }

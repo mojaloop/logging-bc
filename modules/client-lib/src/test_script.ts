@@ -19,29 +19,56 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
 
- * Gates Foundation
- - Name Surname <name.surname@gatesfoundation.com>
-
- * Coil
- - Donovan Changfoot <donovan.changfoot@coil.com>
-
  * Crosslake
  - Pedro Sousa Barreto <pedrob@crosslaketech.com>
-
- * ModusBox
- - Miguel de Barros <miguel.debarros@modusbox.com>
- - Roman Pietrzak <roman.pietrzak@modusbox.com>
 
  --------------
  ******/
 
-'use strict'
+"use strict"
 
-export enum LogLevel {
-    TRACE = 'trace',
-    DEBUG = 'debug',
-    INFO = 'info',
-    WARN = 'warn',
-    ERROR = 'error',
-    FATAL = 'fatal'
+import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib";
+import { KafkaLogger } from "./kafka_logger";
+
+const BC_NAME = "logging-bc";
+const APP_NAME = "client-lib";
+const APP_VERSION = "0.0.1";
+const LOGLEVEL = LogLevel.TRACE;
+
+const kafkaProducerOptions = {
+    kafkaBrokerList: "localhost:9092"
 }
+
+let logger: ILogger;
+
+
+async function start(){
+    logger = new KafkaLogger(
+            BC_NAME,
+            APP_NAME,
+            APP_VERSION,
+            kafkaProducerOptions,
+            "logs",
+            //defaultLogger,
+            LOGLEVEL
+    );
+    await (logger as KafkaLogger).start();
+
+    // use the same way as DefaultLogger
+    logger.trace("trace message");
+    logger.debug("debug message");
+    logger.info("info message");
+    logger.warn("warn message");
+    logger.error("error message");
+    logger.fatal("fatal message");
+
+
+
+    setTimeout(async ()=>{
+        // NOTE Make sure to call KafkaLogger.destroy
+        await (logger as KafkaLogger).destroy();
+    }, 500);
+
+}
+
+start();

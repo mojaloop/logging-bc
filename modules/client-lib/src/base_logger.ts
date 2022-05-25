@@ -35,46 +35,58 @@
  --------------
  ******/
 
-'use strict'
+"use strict"
+
+import * as Winston from "winston"
 
 /* eslint-disable no-console */
 
-import { ILogger } from './ilogger'
-import { LogLevel } from '@mojaloop/logging-bc-logging-types-lib'
+import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib"
 
-export abstract class LoggerBase implements ILogger {
+export abstract class BaseLogger implements ILogger {
+    protected _bcName:string;
+    protected _appName:string;
+    protected _appVersion:string;
     protected _logLevel: LogLevel = LogLevel.DEBUG // default
 
-    setLogLevel (logLevel: LogLevel): void {
-        this._logLevel = logLevel
+    public componentName: string | null;
+
+    constructor(bcName:string, appName:string, appVersion:string, level: LogLevel = LogLevel.INFO) {
+        this._bcName = bcName;
+        this._appName = appName;
+        this._appVersion = appVersion;
+        this._logLevel = level;
     }
 
+    abstract setLogLevel (logLevel: LogLevel): void;
+    abstract createChild(componentName:string):ILogger;
+
     getLogLevel (): LogLevel {
-        return this._logLevel
+        return this._logLevel;
     }
 
     isTraceEnabled (): boolean {
-        return this._logLevel === LogLevel.TRACE
+        return this._logLevel === LogLevel.TRACE;
     }
 
     isDebugEnabled (): boolean {
-        return this._logLevel === LogLevel.DEBUG || this.isTraceEnabled()
+        return this._logLevel === LogLevel.DEBUG || this.isTraceEnabled();
     }
 
     isInfoEnabled (): boolean {
-        return this._logLevel === LogLevel.INFO || this.isDebugEnabled()
+        return this._logLevel === LogLevel.INFO || this.isDebugEnabled();
     }
 
     isWarnEnabled (): boolean {
-        return this._logLevel === LogLevel.WARN || this.isInfoEnabled()
+        return this._logLevel === LogLevel.WARN || this.isInfoEnabled();
     }
 
     isErrorEnabled (): boolean {
-        return this._logLevel === LogLevel.ERROR || this.isWarnEnabled()
+        return this._logLevel === LogLevel.ERROR || this.isWarnEnabled();
     }
 
     isFatalEnabled (): boolean {
-        return this._logLevel === LogLevel.FATAL || this.isErrorEnabled()
+        return this._logLevel === LogLevel.FATAL || this.isErrorEnabled();
     }
 
     abstract trace (message?: any, ...optionalParams: any[]): void
