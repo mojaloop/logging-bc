@@ -34,13 +34,12 @@ const BC_NAME = "logging-bc";
 const APP_NAME = "client-lib";
 const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
-
+const KAFKA_LOGS_TOPIC = "logs";
 const kafkaProducerOptions = {
     kafkaBrokerList: "localhost:9092"
 }
 
 let logger: ILogger;
-
 
 async function start(){
     logger = new KafkaLogger(
@@ -48,8 +47,7 @@ async function start(){
             APP_NAME,
             APP_VERSION,
             kafkaProducerOptions,
-            "logs",
-            //defaultLogger,
+            KAFKA_LOGS_TOPIC,
             LOGLEVEL
     );
     await (logger as KafkaLogger).start();
@@ -62,7 +60,10 @@ async function start(){
     logger.error("error message");
     logger.fatal("fatal message");
 
+    logger.error("typed error message", new Error("TypedErrorClass"));
 
+    const logger2: ILogger = logger.createChild("childComponent");
+    logger2.warn("childComponent warn");
 
     setTimeout(async ()=>{
         // NOTE Make sure to call KafkaLogger.destroy

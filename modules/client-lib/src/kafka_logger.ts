@@ -30,12 +30,12 @@
 
 "use strict"
 
-/* eslint-disable no-console */
 import { ILogger, LogLevel, LogEntry } from "@mojaloop/logging-bc-public-types-lib"
 import {DefaultLogger} from "./default_logger";
 import { MLKafkaProducer, MLKafkaProducerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib"
 import Transport from "winston-transport";
 import Winston from "winston";
+
 
 let globalKafkaLoggerTransport: KafkaLoggerTransport| null = null;
 
@@ -60,8 +60,9 @@ class KafkaLoggerTransport extends Transport {
   async start(): Promise<void>{
     await this._kafkaProducer.connect();
   }
-  async destroy(): Promise<void>{
-    await this._kafkaProducer.destroy();
+
+  async destroyKafkaProducer(): Promise<void> {
+    return this._kafkaProducer.destroy();
   }
 
   private async _log(info:Winston.LogEntry): Promise<void>{
@@ -134,8 +135,8 @@ export class KafkaLogger extends DefaultLogger implements ILogger{
   }
 
   async destroy() : Promise<void>  {
-    await this._logger.end()
-    return await this._kafkaTransport.destroy()
+    await this._logger.end();
+    return await this._kafkaTransport.destroyKafkaProducer();
   }
 
 }

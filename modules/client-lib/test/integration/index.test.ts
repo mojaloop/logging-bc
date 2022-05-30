@@ -37,9 +37,9 @@ import {
   MLKafkaProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
-import {ConsoleLogger} from "@mojaloop/logging-bc-logging-client-lib";
+
 import {IMessage} from "@mojaloop/platform-shared-lib-messaging-types-lib"
-import {LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
+import {ConsoleLogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {KafkaLogger} from "../../src/kafka_logger";
 
 //jest.setTimeout(30000); // change this to suit the test (ms)
