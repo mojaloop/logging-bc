@@ -115,3 +115,5 @@ devspace*
 
 # General Ignore
 *IGNORE*
+
+docker-compose/exec/*

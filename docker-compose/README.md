@@ -1,10 +1,29 @@
 # logging-bc `docker-compose`
 
-#### Docker Compose for Logging
-> Startup, Kafka, Elasticsearch and Kibana. 
+## Startup Docker Environment for Logging
 
-Follow the steps below prior to startup:
-1. Create a new `.env` file with the following contents:
+To startup Kafka, Elasticsearch and Kibana, follow the steps below:
+
+1. Create a directory called `exec` inside the `docker-compose` directory, and go to that directory.
+
+```shell
+$ mkdir exec
+$ cd exec
+```
+
+2. Create the following directories as children of the `docker-compose/exec` directory:
+* `certs`
+* `esdata01`
+* `esdata02`
+* `esdata03`
+* `kibanadata`
+* `logs`
+
+```shell
+mkdir {certs,esdata01,esdata02,esdata03,kibanadata,logs}
+```
+
+3. Create a new `.env` file with the following contents:
 ```properties
 # Password for the 'elastic' user (at least 6 characters)
 ELASTIC_PASSWORD=123@Edd!1234SS
@@ -37,44 +56,51 @@ MEM_LIMIT=2073741824
 #COMPOSE_PROJECT_NAME=myproject
 ```
 
-2. Ensure `vm.max_map_count` is set to at least `262144`: Example to apply property on live system:
-```properties
-sysctl -w vm.max_map_count=262144
+4. Ensure `vm.max_map_count` is set to at least `262144`: Example to apply property on live system:
+```shell
+sysctl -w vm.max_map_count=262144 # might require sudo
 ```
-3. Create the following directories in the `docker-compose` directory:
-* `certs`
-* `esdata01`
-* `esdata02`
-* `esdata03`
-* `logs`
 
-### Startup
+5. Start the docker containers using docker-compose up
 ```shell
 docker-compose up -d
 ```
 
-### ElasticMappings
+**Note:** If you already have Kafka running on another docker container or elsewhere, comment out the section related to docker called `mjl-kafka-zookeeper` in the `docker-compose.yml` file. 
 
+## ElasticSearch Logging Mappings
+
+### Once ElasticSearch has started you should upload the data mappings using the following command:
+
+```shell
+curl -i --insecure -X PUT "https://localhost:9200/mjl-logging/"  \ 
+  -u "elastic:PASSWORD_IN_ENV_FILE" \ 
+  -H "Content-Type: application/json" \
+  --data-binary "@es_mappings.json"
+```
+**Note:** if the password includes special characters, they must be escaped. Alternatively, use `-u "username"` so curl can ask you for the password interactively.
+
+##### Additional Information on Elastic mappings
 https://www.elastic.co/guide/en/elasticsearch/reference/8.1/explicit-mapping.html
-List of mapping types:
 https://www.elastic.co/guide/en/elasticsearch/reference/8.1/mapping-types.html
 
-> 
-```shell
-curl -X PUT "localhost:9200/mjl-logging?pretty" -H 'Content-Type: application/json' -d'
-{
-  "mappings": {
-    "properties": {
-      "level":  { "type": "keyword"  },
-      "level_numeric":  { "type": "numeric"  },
-      "logTimestamp": { "type": "date" },
-      "message":  { "type": "text"  },
-      "meta":  { "type": "keyword"  }
-    }
-  }
-}
-'
-```
+## Kibana Logs and Dashboards Import
+
+Once the mappings are installed, it is time to import the prebuilt Kibana objects for the _DataView_ and the _search_. 
+
+1. Navigate to **(top left burger icon) -> Management / Stack Management -> Kibana / Saved Objects**
+
+>Or go directly to: http://localhost:5601/app/management/kibana/objects
+
+2. Use the Import button on the top right to import the file `kibana-objects.ndjson` located in the `docker-compose` directory.
+
+At this moment, Kibana can be used to view the logs. 
+
+## Viewing Kibana Logs
+
+Go to **(top left burger icon) -> Analytics / Discover**, and then use the Open option on the top right to open the imported `"MojaloopDefaultLogView"` view.   
+
+## Addtitional information
 
 ### Ports
 * 5601 -> [Kibana Local (http://localhost:5601)](http://localhost:5601)

@@ -12,11 +12,11 @@
  --------------
  This is the official list (alphabetical ordering) of the Mojaloop project contributors for this file.
  Names of the original copyright holders (individuals or organizations)
- should be listed with a '*' in the first column. People who have
+ should be listed with a "*" in the first column. People who have
  contributed from an organization can be listed under the organization
  that actually holds the copyright for their contributions (see the
  Gates Foundation organization for an example). Those individuals should have
- their names indented and be marked with a '-'. Email address can be added
+ their names indented and be marked with a "-". Email address can be added
  optionally within square brackets <email>.
 
  * Gates Foundation
@@ -28,59 +28,75 @@
  --------------
  ******/
 
-'use strict'
+"use strict"
 
-import {LogEntry, LogLevel} from '@mojaloop/logging-bc-logging-types-lib'
+import {LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib"
 import {
+  MLKafkaConsumer,
   MLKafkaConsumerOptions,
   MLKafkaConsumerOutputType,
   MLKafkaProducerOptions
-} from '@mojaloop/platform-shared-lib-nodejs-kafka-client-lib'
+} from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib"
 
-import {ConsoleLogger, MLKafkaLoggerDispatcher} from "@mojaloop/logging-bc-logging-client-lib";
-import {MLElasticsearchLogStorage} from "../../src/infrastructure/es_log_storage";
-import {MLLogEventHandler} from "../../dist/application/log_event_handler";
-import { Client } from '@elastic/elasticsearch';
+import {DefaultLogger, KafkaLogger } from "@mojaloop/logging-bc-client-lib";
+import {ElasticsearchLogStorage} from "../../src/infrastructure/es_log_storage";
+import {LogEventHandler} from "../../dist/application/log_event_handler";
+import { Client } from "@elastic/elasticsearch";
 
-const logger: ConsoleLogger = new ConsoleLogger()
+const BC_NAME = "logging-bc";
+const APP_NAME = "client-lib-integration-tests";
+const APP_VERSION = "0.0.1";
+const LOGLEVEL = LogLevel.TRACE;
+const ES_LOGS_INDEX = "mjl-logging";
+const TOPIC_NAME = "logging-svc-integration-tests-logs-topic";
 
-let producerOptions: MLKafkaProducerOptions 
-let consumerOptions: MLKafkaConsumerOptions
+let producerOptions: MLKafkaProducerOptions;
+let kafkaConsumer: MLKafkaConsumer;
 
-let logDispatch : MLKafkaLoggerDispatcher;
+let consumerOptions: MLKafkaConsumerOptions;
+let elasticStorage:ElasticsearchLogStorage;
 
-const TOPIC_NAME = 'nodejs-rdkafka-svc-integration-test-log-bc-topic'
+let logEvtHandlerForES:LogEventHandler;
+let kafkaLogger : KafkaLogger;
+const defaultLogger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
-describe('nodejs-rdkafka-log-bc', () => {
+
+describe("nodejs-rdkafka-log-bc", () => {
   jest.setTimeout(10000);
 
   beforeAll(async () => {
-    // Client
     producerOptions = {
-      kafkaBrokerList: 'localhost:9092',
-      producerClientId: 'test_producer'
+      kafkaBrokerList: "localhost:9092",
     }
 
-    logDispatch = new MLKafkaLoggerDispatcher(producerOptions, TOPIC_NAME)
-    await logDispatch.start();
+    kafkaLogger = new KafkaLogger(
+            BC_NAME,
+            APP_NAME,
+            APP_VERSION,
+            producerOptions,
+            TOPIC_NAME,
+            LOGLEVEL
+    );
+    await kafkaLogger.start();
 
     // Command Handler
     consumerOptions = {
-      kafkaBrokerList: 'localhost:9092',
-      kafkaGroupId: 'test_consumer_group',
+      kafkaBrokerList: "localhost:9092",
+      kafkaGroupId: "test_consumer_group",
       outputType: MLKafkaConsumerOutputType.Json
-    }
+    };
   })
 
   afterAll(async () => {
     // Cleanup
-    await logDispatch.destroy()
+    await kafkaLogger.destroy()
+    logEvtHandlerForES.destroy();
   })
 
-  test('produce and consume log-bc using kafka and elasticsearch', async () => {
+  test("produce and consume log-bc using kafka and elasticsearch", async () => {
     // Startup Handler
     //Elastic
-    const elasticOpts = { node: 'https://localhost:9200',
+    const elasticOpts = { node: "https://localhost:9200",
       auth: {
         username: "elastic",
         password: process.env.elasticsearch_password || "123@Edd!1234SS",
@@ -90,21 +106,21 @@ describe('nodejs-rdkafka-log-bc', () => {
         rejectUnauthorized: false,
       }
     };
-    const elasticStorage = new MLElasticsearchLogStorage(elasticOpts);
-    const logEvtHandlerForES = new MLLogEventHandler(logger, elasticStorage, consumerOptions, TOPIC_NAME);
+    elasticStorage = new ElasticsearchLogStorage(elasticOpts, ES_LOGS_INDEX, defaultLogger);
+    logEvtHandlerForES = new LogEventHandler(defaultLogger, elasticStorage, consumerOptions, TOPIC_NAME);
     await logEvtHandlerForES.init();
 
-    await logDispatch.info('Logger message. Hello World! Info.');
-    await logDispatch.debug('Logger message. Hello World! Debug.');
-    await logDispatch.warn('Logger message. Hello World! Warn.');
+    await kafkaLogger.info("Logger message. Hello World! Info.");
+    await kafkaLogger.debug("Logger message. Hello World! Debug.");
+    await kafkaLogger.warn("Logger message. Hello World! Warn.");
     await new Promise(f => setTimeout(f, 2000));
 
     const esClient = new Client(elasticOpts);
     const result = await esClient.search({
-      index: 'mjl-logging',
+      index: "mjl-logging",
       query: {
         match: {
-          level: 'debug'
+          level: "debug"
         }
       }
     });

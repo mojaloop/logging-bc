@@ -26,44 +26,65 @@
  - Jason Bruwer <jason.bruwer@coil.com>
 
  --------------
-******/
+ ******/
 
-'use strict'
+"use strict"
 
-import {LogEntry, LogLevel} from '@mojaloop/logging-bc-logging-types-lib';
-import { IStorage } from "../application/log_event_handler";
-import { Client } from '@elastic/elasticsearch';
-import { ClientOptions } from "@elastic/elasticsearch/lib/client";
+import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
+import {IStorage} from "../application/log_event_handler";
+import {Client} from "@elastic/elasticsearch";
+import {ClientOptions} from "@elastic/elasticsearch/lib/client";
 
-export class MLElasticsearchLogStorage implements IStorage {
-  private client: Client
-  private clientOps: ClientOptions
-  private index: string
+export class ElasticsearchLogStorage implements IStorage {
+    private _client: Client;
+    private _clientOps: ClientOptions;
+    private _index: string;
+    private _logger: ILogger;
 
-  constructor(
-      opts: ClientOptions,
-      index: string = 'mjl-logging'
-  ) {
-    this.clientOps = opts;
-    this.index = index;
-  }
-
-  async init(): Promise<void> {
-    this.client = new Client(this.clientOps);
-  }
-
-  async store(entries: LogEntry[]): Promise<void> {
-    for (const itm of entries) {
-      await this.client.index({
-        index: this.index,
-        document: {
-          level: itm.level,
-          level_numeric: Object.keys(LogLevel).indexOf(itm.level.toUpperCase()),
-          logTimestamp: itm.logTimestamp,
-          message: ''+itm.message,
-          meta: itm.meta
-        }
-      });
+    constructor(opts: ClientOptions, index: string, logger:ILogger) {
+        this._clientOps = opts;
+        this._index = index;
+        this._logger = logger;
+        this._client = new Client(this._clientOps);
     }
-  }
+
+    async init(): Promise<void> {
+        this._logger.info("ElasticsearchLogStorage initialised");
+
+        // test the connection
+        const info = await this._client.info();
+        this._logger.info(`Connected to elasticsearch instance with name: ${info.name}, and cluster name: ${info.cluster_name}`);
+    }
+
+
+    async store(entries: LogEntry[]): Promise<void> {
+        try {
+            for (const itm of entries) {
+                const doc:any = {
+                    level: itm.level,
+                    level_numeric: Object.keys(LogLevel).indexOf(itm.level.toUpperCase()),
+                    timestamp: itm.timestamp,
+                    bcName: itm.bcName,
+                    appName: itm.appName,
+                    appVersion: itm.appVersion,
+                    message: "" + itm.message,
+                    component: itm.component
+                };
+                if(itm.meta && itm.meta.error){
+                    doc.error = itm.meta.error
+                }
+                if(itm.meta){
+                    doc.meta = itm.meta;
+                }
+
+                await this._client.index({
+                    index: this._index,
+                    document: doc
+                });
+                this._logger.debug("ElasticsearchLogStorage stored doc");
+            }
+        } catch (err) {
+            this._logger.error("ElasticsearchLogStorage error", err);
+        }
+    }
 }

@@ -15,9 +15,7 @@
   ],
   "scripts": {
     "prepare": "husky install",
-    "start": "yarn workspaces foreach --parallel -v run start",
     "start:logging-svc": "yarn workspace @mojaloop/logging-bc-logging-svc run start",
-    "start:authorization-svc": "yarn workspace @mojaloop/security-bc-authorization-svc run start",
     "build": "yarn workspaces foreach -v run build",
     "watch": "yarn workspaces foreach --parallel -v run watch",
     "clean": "yarn run clean:dist && yarn run clean:npm",

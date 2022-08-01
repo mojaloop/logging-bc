@@ -28,12 +28,12 @@
  --------------
 ******/
 
-'use strict'
+"use strict"
 
-import {LogEntry} from "@mojaloop/logging-bc-logging-types-lib";
+import {ILogger, LogEntry} from "@mojaloop/logging-bc-public-types-lib";
 import {IMessage} from "@mojaloop/platform-shared-lib-messaging-types-lib";
 import {MLKafkaConsumer, MLKafkaConsumerOptions} from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
-import {ILogger} from "@mojaloop/logging-bc-logging-client-lib";
+
 
 //Since the engine/processor will not be dynamic.
 export interface IStorage {
@@ -41,12 +41,12 @@ export interface IStorage {
   init () : Promise<void>
 }
 
-export class MLLogEventHandler {
-  private storage : IStorage;
-  private logger: ILogger;
-  private consumerOpts : MLKafkaConsumerOptions
-  private kafkaTopic : string
-  private kafkaConsumer : MLKafkaConsumer;
+export class LogEventHandler {
+  private _storage : IStorage;
+  private _logger: ILogger;
+  private _consumerOpts : MLKafkaConsumerOptions
+  private _kafkaTopic : string
+  private _kafkaConsumer : MLKafkaConsumer;
 
   constructor(
       logger: ILogger,
@@ -54,39 +54,41 @@ export class MLLogEventHandler {
       consumerOpts: MLKafkaConsumerOptions,
       kafkaTopic : string
   ) {
-    this.logger = logger;
-    this.storage = storage;
-    this.consumerOpts = consumerOpts;
-    this.kafkaTopic = kafkaTopic;
+    this._logger = logger;
+    this._storage = storage;
+    this._consumerOpts = consumerOpts;
+    this._kafkaTopic = kafkaTopic;
   }
 
   async init () : Promise<void> {
-    await this.storage.init()
+    await this._storage.init()
 
-    this.kafkaConsumer = new MLKafkaConsumer(this.consumerOpts, this.logger);
-    this.kafkaConsumer.setTopics([this.kafkaTopic]);
-    this.kafkaConsumer.setCallbackFn(this.processLogMessage.bind(this));
-    await this.kafkaConsumer.connect();
-    await this.kafkaConsumer.start();
+    this._kafkaConsumer = new MLKafkaConsumer(this._consumerOpts, this._logger);
+    this._kafkaConsumer.setTopics([this._kafkaTopic]);
+    this._kafkaConsumer.setCallbackFn(this.processLogMessage.bind(this));
+    await this._kafkaConsumer.connect();
+    await this._kafkaConsumer.start();
   }
 
   async processLogMessage (message: IMessage) : Promise<void> {
     const value = message.value;
 
-    let logEntries: LogEntry[] = [];
-    if (typeof value == 'object') {
+    const logEntries: LogEntry[] = [];
+    if (typeof value == "object") {
       logEntries.push(value as LogEntry);
     } else {
-      this.logger.error('Unable to process value ['+value+'] of type ['+(typeof value)+'].');
+      this._logger.error("Unable to process value ["+value+"] of type ["+(typeof value)+"].");
       return Promise.resolve(undefined);
     }
 
-    if (logEntries == undefined || logEntries.length == 0) return Promise.resolve(undefined);
+    if (logEntries == undefined || logEntries.length == 0)
+      return Promise.resolve(undefined);
 
-    return await this.storage.store(logEntries);
+    await this._storage.store(logEntries);
+    return
   }
 
   async destroy () : Promise<void> {
-    return this.kafkaConsumer.destroy(true)
+    return this._kafkaConsumer.destroy(true)
   }
 }

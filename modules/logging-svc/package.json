@@ -9,10 +9,10 @@
   },
   "contributors": [
     "Miguel de Barros <miguel.debarros@modusbox.com>",
-    "Jason Bruwer <jason.bruwer@coil.com>"
+    "Jason Bruwer <jason.bruwer@coil.com>",
+    "Pedro Sousa Barreto <pedrosousabarreto@gmail.com>"
   ],
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/application/index.js",
   "files": [
     "/dist"
   ],
@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "start": "yarn run service",
-    "service": "tsc && yarn node dist/index.js --config ../../.env",
+    "service": "tsc && yarn node dist/application/index.js",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rm -Rf dist",
@@ -36,44 +36,17 @@
     "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
     "test:coverage": "jest --passWithNoTests --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.test.ts'",
     "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
-    "audit:resolve": "SHELL=sh resolve-audit",
-    "audit:check": "SHELL=sh check-audit",
-    "dep:check": "yarn run ncu -e 2",
-    "dep:update": "yarn run ncu -u"
+    "audit:check": "yarn npm audit",
+    "dep:check": "ncu -e 2",
+    "dep:update": "ncu -u"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.1.0",
-    "@mojaloop/logging-bc-logging-client-lib": "^0.0.6",
-    "@mojaloop/logging-bc-logging-types-lib": "^0.0.2",
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.4",
-    "commander": "^8.3.0",
-    "dotenv": "^10.0.0"
+    "@mojaloop/logging-bc-public-types-lib": "workspace:*",
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.8"
   },
   "devDependencies": {
     "@elastic/elasticsearch": "^8.1.0",
-    "@mojaloop/logging-bc-logging-client-lib": "^0.0.6",
-    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.2",
-    "@types/dotenv": "^8.2.0",
-    "@types/jest": "^27.0.3",
-    "@types/node": "^16.11.9",
-    "@types/node-cache": "^4.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "eslint": "^8.3.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-config-standard-with-typescript": "^21.0.1",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.1",
-    "eslint-plugin-standard": "^5.0.0",
-    "faucet": "0.0.1",
-    "jest": "^27.3.1",
-    "jest-junit": "^13.0.0",
-    "npm-audit-resolver": "^2.3.1",
-    "npm-check-updates": "^12.0.2",
-    "nyc": "^15.1.0",
-    "pre-commit": "^1.2.2",
-    "ts-jest": "^27.0.7",
-    "typedoc": "^0.22.9",
-    "typescript": "^4.5.0"
+    "@mojaloop/platform-shared-lib-messaging-types-lib": "^0.0.3"
   }
 }
