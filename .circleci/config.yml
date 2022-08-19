@@ -1,0 +1,39 @@
+# CircleCI v2.1 Config
+version: 2.1
+
+##
+# Executors
+#
+# CircleCI Executors
+##
+executors:
+  default-docker:
+    working_directory: &workingDirVar /home/circleci/project
+    docker:
+      - image: node:16.13
+
+jobs:
+#  build:
+#    executor: default-docker
+#    steps:
+#      - checkout
+#      - run: yarn install
+#      - save_cache:
+#          paths:
+#            - node_modules
+#          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+#      - persist_to_workspace:
+#          root: *workingDirVar
+#          paths:
+#            - .
+  test-unit:
+    executor: default-docker
+    steps:
+      - checkout
+      - run: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+      - run:
+          name: Execute unit tests
+          command: yarn test:unit
