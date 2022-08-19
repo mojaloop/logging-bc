@@ -49,7 +49,7 @@ jobs:
           at: *workingDirVar
       - restore_cache:
           keys:
-            - dependency-cache-{{ checksum "yarn.lock" }}
+            - node_modules-cache-{{ checksum "yarn.lock" }}
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Execute unit tests
