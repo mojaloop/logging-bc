@@ -17,6 +17,9 @@ jobs:
     executor: default-docker
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - node_modules-cache-{{ checksum "yarn.lock" }}
       - run: yarn install
       - save_cache:
           paths:
