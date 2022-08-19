@@ -13,20 +13,7 @@ executors:
       - image: node:16.13
 
 jobs:
-#  build:
-#    executor: default-docker
-#    steps:
-#      - checkout
-#      - run: yarn install
-#      - save_cache:
-#          paths:
-#            - node_modules
-#          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-#      - persist_to_workspace:
-#          root: *workingDirVar
-#          paths:
-#            - .
-  test-unit:
+  build:
     executor: default-docker
     steps:
       - checkout
@@ -34,6 +21,19 @@ jobs:
       - save_cache:
           paths:
             - node_modules
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - persist_to_workspace:
+          root: *workingDirVar
+          paths:
+            - .
+  test-unit:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Execute unit tests
           command: yarn test:unit
