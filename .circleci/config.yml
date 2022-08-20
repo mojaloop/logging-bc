@@ -14,17 +14,17 @@ executors:
 
 jobs:
   setup:
-    executor: default-docker 
+    executor: default-docker
     steps:
       - checkout
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "package-lock.json" }}
+            - node_modules-cache-{{ checksum "package.json" }}
       - run: npm install
       - save_cache:
           paths:
             - node_modules
-          key: node_modules-cache-{{ checksum "package-lock.json" }}
+          key: node_modules-cache-{{ checksum "package.json" }}
       - persist_to_workspace:
           root: *workingDirVar
           paths:
@@ -36,7 +36,7 @@ jobs:
           at: *workingDirVar
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "package-lock.json" }}
+            - node_modules-cache-{{ checksum "package.json" }}
       - run: npm run build
       - save_cache:
           paths:
@@ -53,7 +53,7 @@ jobs:
           at: *workingDirVar
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "package-lock.json" }}
+            - node_modules-cache-{{ checksum "package.json" }}
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Execute unit tests
