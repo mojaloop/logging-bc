@@ -38,11 +38,10 @@ do
         #echo -e "\e[36m  [+] ${PACKAGE} \e[21m (changed in [${LATEST_COMMIT_SINCE_LAST_BUILD:0:7}])\e[0m"
         echo -e "Package: ${PACKAGE} CHANGED!! Publishing starting..."
 
-        cd ${PACKAGE_PATH}
+        PACKAGE_NAME=${jq '.name' ${PACKAGE_PATH}/package.json}
 
-        npm run publish
+        npm run -ws ${PACKAGE_NAME} publish
 
-        cd --
         echo -e "Package: ${PACKAGE} Publishing complete"
 
   else
