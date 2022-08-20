@@ -38,11 +38,18 @@ do
         #echo -e "\e[36m  [+] ${PACKAGE} \e[21m (changed in [${LATEST_COMMIT_SINCE_LAST_BUILD:0:7}])\e[0m"
         echo -e "Package: ${PACKAGE} CHANGED!! Publishing starting..."
 
-        PACKAGE_NAME=${jq '.name' ${PACKAGE_PATH}/package.json}
+        PACKAGE_NAME=$(jq '.name' ${PACKAGE_PATH}/package.json | sed -r 's/^"|"$//g')
 
-        npm run -ws ${PACKAGE_NAME} publish
+        echo $PACKAGE_NAME
 
-        echo -e "Package: ${PACKAGE} Publishing complete"
+        npm -w $PACKAGE_NAME run publish
+
+        if [[ $? -eq 0 ]]; then
+          echo -e "Package: ${PACKAGE} Publishing complete"
+        else
+          echo -e "Package: ${PACKAGE} Publishing error... exiting"
+          exit 1
+        fi
 
   else
     echo -e "Package: ${PACKAGE} not changed or private"
