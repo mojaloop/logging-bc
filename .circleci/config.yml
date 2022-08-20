@@ -88,8 +88,10 @@ jobs:
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run: cat ~/.npmrc
+#      - env:
+#          NPM_TOKEN={{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Detect and publish modules
           command: chmod +x .circleci/publish_immediate.sh && .circleci/publish_immediate.sh
