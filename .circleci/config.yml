@@ -29,7 +29,7 @@ jobs:
       - restore_cache:
           keys:
             - node_modules-cache-{{ checksum "package-lock.json" }}
-      - run: npm ci
+      - run: npm install
       - save_cache:
           paths:
             - node_modules
@@ -76,11 +76,11 @@ jobs:
       - run:
           name: Execute unit tests
           command: npm run test:unit
+
   publish:
     executor: default-docker
     steps:
-      - attach_workspace:
-          at: *workingDirVar
+      - checkout
       - restore_cache:
           keys:
             - node_modules-cache-{{ checksum "package-lock.json" }}
