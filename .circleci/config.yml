@@ -47,6 +47,7 @@ jobs:
           keys:
             - node_modules-cache-{{ checksum "package-lock.json" }}
       - run: npm run lint
+
   build:
     executor: default-docker
     steps:
@@ -58,12 +59,13 @@ jobs:
       - run: npm run build
       - save_cache:
           paths:
-            - modules
+            - .
           key: build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - persist_to_workspace:
           root: *workingDirVar
           paths:
             - .
+
   test-unit:
     executor: default-docker
     steps:
@@ -83,11 +85,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "package-lock.json" }}
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
       - run: cat .npmrc
       - run: ls -la ./modules/logging-svc/dist/
       - run: echo "published!!!"
@@ -114,11 +115,12 @@ workflows:
       - build:
           context: org-global
           requires:
-            - lint
+            - setup
       - test-unit:
           context: org-global
           requires:
             - build
+            - lint
       - trigger-publish-workflows:
           context: org-global
           requires:
