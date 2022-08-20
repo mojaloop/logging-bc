@@ -52,7 +52,7 @@ do
 
         echo $PACKAGE_NAME
 
-        npm -w ${$PACKAGE_NAME} run publish
+        npm -w ${PACKAGE_NAME} run publish
 
         if [[ $? -eq 0 ]]; then
           echo -e "Package: ${PACKAGE} Publishing complete"
@@ -66,11 +66,12 @@ do
   fi
 done
 
-if [[ $COUNT -eq 0 ]]; then
-  echo -e "\e[93mNo changes detected in packages. Skip triggering workflows.\e[0m"
+if [[ $COUNT -gt 0 ]]; then
+  echo "Changes detected in ${COUNT} package(s): ${PUBLISH_PACKAGES}"
+
   exit 0
 fi
 
-echo "Changes detected in ${COUNT} package(s): ${PUBLISH_PACKAGES}"
+  echo -e "\e[93mNo changes detected in packages. Skip triggering workflows.\e[0m"
 exit 0
 
