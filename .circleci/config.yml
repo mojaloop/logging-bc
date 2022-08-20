@@ -20,7 +20,7 @@ jobs:
       - restore_cache:
           keys:
             - node_modules-cache-{{ checksum "yarn.lock" }}
-      - run: yarn install
+      - run: npm install
       - save_cache:
           paths:
             - node_modules
@@ -37,7 +37,7 @@ jobs:
       - restore_cache:
           keys:
             - node_modules-cache-{{ checksum "yarn.lock" }}
-      - run: yarn build
+      - run: npm run build
       - save_cache:
           paths:
             - modules
@@ -57,7 +57,7 @@ jobs:
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Execute unit tests
-          command: yarn test:unit
+          command: npm run test:unit
 
 workflows:
   version: 2
