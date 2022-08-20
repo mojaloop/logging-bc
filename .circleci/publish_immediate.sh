@@ -52,7 +52,8 @@ do
 
         echo $PACKAGE_NAME
 
-        npm -w ${PACKAGE_NAME} run publish
+        npm -w ${PACKAGE_NAME} version patch
+        npm -w ${PACKAGE_NAME} publish --tag=latest --access public
 
         if [[ $? -eq 0 ]]; then
           echo -e "Package: ${PACKAGE} Publishing complete"
