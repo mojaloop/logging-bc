@@ -85,6 +85,7 @@ jobs:
           keys:
             - node_modules-cache-{{ checksum "package.json" }}
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run: ls -la ./modules/logging-svc/dist/
       - run: echo "published!!!"
 
   trigger-publish-workflows:
@@ -123,5 +124,4 @@ workflows:
     jobs:
       - publish:
           context: org-global
-          requires:
-            - test-unit
+
