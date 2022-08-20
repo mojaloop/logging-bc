@@ -38,7 +38,9 @@ do
         #echo -e "\e[36m  [+] ${PACKAGE} \e[21m (changed in [${LATEST_COMMIT_SINCE_LAST_BUILD:0:7}])\e[0m"
         echo -e "Package: ${PACKAGE} CHANGED!! Publishing starting..."
 
-        PACKAGE_NAME=$(jq '.name' ${PACKAGE_PATH}/package.json | sed -r 's/^"|"$//g')
+        # jq not always installed
+        #PACKAGE_NAME=$(jq '.name' ${PACKAGE_PATH}/package.json | sed -r 's/^"|"$//g')
+        PACKAGE_NAME=$(cat ${PACKAGE_PATH}/package.json | grep name | head -1 | awk -F: '{ print $2 }' | sed 's/[ ",]//g')
 
         echo $PACKAGE_NAME
 
