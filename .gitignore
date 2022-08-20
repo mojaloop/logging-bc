@@ -117,3 +117,4 @@ devspace*
 *IGNORE*
 
 docker-compose/exec/*
+/.idea/
