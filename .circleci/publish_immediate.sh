@@ -39,7 +39,7 @@ do
 
   echo -e "Package: ${PACKAGE} last change commit sha is: ${PACKAGE_LAST_CHANGE_COMMIT_SHA} (Private: ${PACKAGE_IS_PRIVATE})"
 
-  if [[ -z "$PACKAGE_IS_PRIVATE" || "$PACKAGE_IS_PRIVATE" == 'false' ]] && [[ -z "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]] || [[ "$CIRCLE_SHA1" == "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]]; then
+  if [[ "$PACKAGE_IS_PRIVATE" == 'false' ]] && [[ -z "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]] || [[ "$CIRCLE_SHA1" == "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]]; then
         PARAMETERS+=", \"$PACKAGE\":true"
         PUBLISH_PACKAGES+"$PACKAGE "
         COUNT=$((COUNT + 1))
