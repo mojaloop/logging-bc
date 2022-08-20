@@ -68,11 +68,16 @@ do
 done
 
 if [[ $COUNT -gt 0 ]]; then
-  echo "Changes detected in ${COUNT} package(s): ${PUBLISH_PACKAGES}"
+  echo -e "${COUNT} package(s) were published, committing new npm versions..."
+
+  git commit --amend -m "$(git log -1 --pretty=%B) [ci skip]"
+  git push origin $CIRCLE_BRANCH --tags
+
+    echo -e "${COUNT} package(s) were published, committing new npm versions..."
 
   exit 0
 fi
 
-  echo -e "\e[93mNo changes detected in packages. Skip triggering workflows.\e[0m"
+echo -e "\e[93mNo changes detected in packages. Skip triggering workflows.\e[0m"
 exit 0
 

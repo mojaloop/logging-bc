@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.1.0",
-    "@mojaloop/logging-bc-public-types-lib": "*",
+    "@mojaloop/logging-bc-public-types-lib": "~0.1.0",
     "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "^0.0.8"
   },
   "devDependencies": {

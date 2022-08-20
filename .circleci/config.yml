@@ -78,7 +78,7 @@ jobs:
           name: Execute unit tests
           command: npm run test:unit
 
-  publish_immediate:
+  publish_npm:
     executor: default-docker
     steps:
       - attach_workspace:
@@ -89,45 +89,12 @@ jobs:
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
-      - run: cat ~/.npmrc
+#      - run: cat ~/.npmrc
       - run: npm config set registry https://registry.npmjs.org/
-#      - env:
-#          NPM_TOKEN={{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Detect and publish modules
-          command: chmod +x .circleci/publish_immediate.sh && .circleci/publish_immediate.sh
-      - run:
-          name: Commit npm version changes
-          command: git commit --amend -m "$(git log -1 --pretty=%B) [ci skip]"
-      - run:
-          name: Push the updated npm version to git branch
-          command: git commit --amend -m "$(git log -1 --pretty=%B) [ci skip]"
+          command: chmod +x .circleci/publish_npm.sh && .circleci/publish_npm.sh
 
-#  publish:
-#    executor: default-docker
-#    steps:
-#      - checkout
-#      - restore_cache:
-#          keys:
-#            - build-cache-{{ .Environment.CIRCLE_SHA1 }}
-#      - run:
-#          name: Authenticate with registry
-#          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
-#      - run: cat .npmrc
-#      - run: ls -la ./modules/logging-svc/dist/
-#      - run: echo "published!!!"
-#
-#  trigger-publish-workflows:
-#    executor: default-docker
-#    steps:
-#      - attach_workspace:
-#          at: *workingDirVar
-#      - restore_cache:
-#          keys:
-#            - build-cache-{{ .Environment.CIRCLE_SHA1 }}
-#      - run:
-#          name: Trigger publish workflow
-#          command: chmod +x .circleci/publish.sh && .circleci/publish.sh
 
 workflows:
   version: 2
@@ -149,18 +116,8 @@ workflows:
           requires:
             - build
             - lint
-      - publish_immediate:
+      - publish_npm:
           context: org-global
           requires:
             - test-unit
 
-#      - trigger-publish-workflows:
-#          context: org-global
-#          requires:
-#            - test-unit
-#  publish:
-#    when: << pipeline.parameters.publish >>
-#    jobs:
-#      - publish:
-#          context: org-global
-#
