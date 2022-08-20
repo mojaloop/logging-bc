@@ -1,14 +1,30 @@
 # CircleCI v2.1 Config
 version: 2.1
 
-parameters:
-  # This parameter is used to trigger the main workflow
-  trigger:
-    type: boolean
-    default: true
-  publish:
-    type: boolean
-    default: false
+##
+# Executors
+#
+# CircleCI Executors
+##
+
+#parameters:
+#  # This parameter is used to trigger the main workflow
+#  trigger:
+#    type: boolean
+#    default: true
+#  publish:
+#    type: boolean
+#    default: false
+
+defaults_configure_git: &defaults_configure_git
+  name: Configure git
+  command: |
+    git config user.email ${GIT_CI_EMAIL}
+    git config user.name ${GIT_CI_USER}
+
+defaults_npm_auth: &defaults_npm_auth
+  name: Update NPM registry auth token
+  command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
 
 ##
 # Executors
@@ -87,8 +103,9 @@ jobs:
           keys:
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          <<: *defaults_configure_git
+      - run:
+          <<: *defaults_npm_auth
 #      - run: cat ~/.npmrc
       - run: npm config set registry https://registry.npmjs.org/
       - run:
@@ -99,7 +116,7 @@ jobs:
 workflows:
   version: 2
   build_lint_and_test:
-    when: << pipeline.parameters.trigger >>
+#    when: << pipeline.parameters.trigger >>
     jobs:
       - setup:
           context: org-global

@@ -70,11 +70,10 @@ done
 if [[ $COUNT -gt 0 ]]; then
   echo -e "${COUNT} package(s) were published, committing new npm versions..."
 
-  git commit --amend -m "$(git log -1 --pretty=%B) [ci skip]"
+  git commit --amend -nm "$(git log -1 --pretty=%B) [ci skip]"
   git push origin $CIRCLE_BRANCH --tags
 
-    echo -e "${COUNT} package(s) were published, committing new npm versions..."
-
+  echo -e "new npm versions committed and pushed, all done."
   exit 0
 fi
 
