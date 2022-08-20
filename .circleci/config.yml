@@ -96,6 +96,12 @@ jobs:
       - run:
           name: Detect and publish modules
           command: chmod +x .circleci/publish_immediate.sh && .circleci/publish_immediate.sh
+      - run:
+          name: Commit npm version changes
+          command: git commit --amend -m "$(git log -1 --pretty=%B) [ci skip]"
+      - run:
+          name: Push the updated npm version to git branch
+          command: git commit --amend -m "$(git log -1 --pretty=%B) [ci skip]"
 
 #  publish:
 #    executor: default-docker
