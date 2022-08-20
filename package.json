@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/logging-bc",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "mojaloop logging bounded context.",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/logging-bc",
@@ -32,8 +32,8 @@
     "audit:check": "npm -ws --parallel -v run audit:check",
     "dep:check": "npm -ws --parallel -v run dep:check",
     "dep:update": "npm -ws --parallel -v run dep:update",
-    "publish:public-types": "npm -w @mojaloop/logging-bc-public-types-lib run publish",
-    "publish:client-lib": "npm -w @mojaloop/logging-bc-client-lib run publish"
+    "publish:public-types": "npm -w @mojaloop/logging-bc-public-types-lib run npm_publish",
+    "publish:client-lib": "npm -w @mojaloop/logging-bc-client-lib run npm_publish"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
