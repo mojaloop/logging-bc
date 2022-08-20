@@ -3,7 +3,7 @@
 [![Git Commit](https://img.shields.io/github/last-commit/mojaloop/logging-bc.svg?style=flat)](https://github.com/mojaloop/logging-bc/commits/main)
 [![Git Releases](https://img.shields.io/github/release/mojaloop/logging-bc.svg?style=flat)](https://github.com/mojaloop/logging-bc/releases)
 [![Npm Version](https://img.shields.io/npm/v/@mojaloop/logging-bc-client-lib.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/logging-bc-client-lib)
-[![NPM Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/@mojaloop/logging-bc.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/logging-bc)
+[![NPM Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/@mojaloop/logging-bc-client-lib.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/logging-bc-client-lib)
 [![CircleCI](https://circleci.com/gh/mojaloop/logging-bc.svg?style=svg)](https://circleci.com/gh/mojaloop/logging-bc)
 
 

@@ -1,9 +1,9 @@
 {
   "name": "@mojaloop/logging-bc-client-lib",
   "version": "0.1.3",
-  "description": "mojaloop logging client lib",
+  "description": "Mojaloop logging bounded context client lib",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/mojaloop/logging-bc/tree/main/modules/logging-svc",
+  "homepage": "https://github.com/mojaloop/logging-bc/tree/main/modules/client-lib",
   "bugs": {
     "url": "https://github.com/mojaloop/logging-bc/issues#readme"
   },
