@@ -41,7 +41,7 @@ do
 
   if [[ "$PACKAGE_IS_PRIVATE" == 'false' ]] && [[ -z "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]] || [[ "$CIRCLE_SHA1" == "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]]; then
         PARAMETERS+=", \"$PACKAGE\":true"
-        PUBLISH_PACKAGES+"$PACKAGE "
+        PUBLISH_PACKAGES+="$PACKAGE "
         COUNT=$((COUNT + 1))
         #echo -e "\e[36m  [+] ${PACKAGE} \e[21m (changed in [${LATEST_COMMIT_SINCE_LAST_BUILD:0:7}])\e[0m"
         echo -e "Package: ${PACKAGE} CHANGED!! Publishing starting..."
@@ -52,7 +52,7 @@ do
 
         echo $PACKAGE_NAME
 
-        npm -w $PACKAGE_NAME run publish
+        npm -w ${$PACKAGE_NAME} run publish
 
         if [[ $? -eq 0 ]]; then
           echo -e "Package: ${PACKAGE} Publishing complete"
