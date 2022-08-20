@@ -1,6 +1,15 @@
 # CircleCI v2.1 Config
 version: 2.1
 
+parameters:
+  # This parameter is used to trigger the main workflow
+  trigger:
+    type: boolean
+    default: true
+  publish:
+    type: boolean
+    default: false
+
 ##
 # Executors
 #
@@ -29,6 +38,15 @@ jobs:
           root: *workingDirVar
           paths:
             - .
+  lint:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - restore_cache:
+          keys:
+            - node_modules-cache-{{ checksum "package.json" }}
+      - run: npm run lint
   build:
     executor: default-docker
     steps:
@@ -58,16 +76,52 @@ jobs:
       - run:
           name: Execute unit tests
           command: npm run test:unit
+  publish:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - restore_cache:
+          keys:
+            - node_modules-cache-{{ checksum "package.json" }}
+            - build-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run: echo "published!!!"
+
+  trigger-publish-workflows:
+    executor: default-docker
+    steps:
+      - checkout
+      - run:
+          name: Trigger publish workflow
+          command: chmod +x .circleci/publish.sh && .circleci/publish.sh
 
 workflows:
   version: 2
-  build_and_test:
+  build_lint_and_test:
+    when: << pipeline.parameters.trigger >>
     jobs:
-      - setup
-      - build:
+      - setup:
+          context: org-global
+      - lint:
+          context: org-global
           requires:
             - setup
+      - build:
+          context: org-global
+          requires:
+            - lint
       - test-unit:
+          context: org-global
           requires:
             - build
-
+      - trigger-publish-workflows:
+          context: org-global
+          requires:
+            - test-unit
+  publish:
+    when: << pipeline.parameters.publish >>
+    jobs:
+      - publish:
+          context: org-global
+          requires:
+            - test-unit

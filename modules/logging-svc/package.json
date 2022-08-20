@@ -12,6 +12,7 @@
     "Jason Bruwer <jason.bruwer@coil.com>",
     "Pedro Sousa Barreto <pedrosousabarreto@gmail.com>"
   ],
+  "private": true,
   "main": "./dist/application/index.js",
   "files": [
     "/dist"
@@ -23,20 +24,20 @@
     "test:unit"
   ],
   "scripts": {
-    "start": "yarn run service",
-    "service": "tsc && yarn node dist/application/index.js",
+    "start": "npm run service",
+    "service": "tsc && npm node dist/application/index.js",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rm -Rf dist",
-    "pretest": "yarn run build",
-    "standard": "yarn run lint",
-    "lint": "yarn run build && npx eslint ./src",
-    "lint:fix": "yarn run build && npx eslint ./src --fix",
+    "pretest": "npm run build",
+    "standard": "npm run lint",
+    "lint": "npm run build && npx eslint ./src",
+    "lint:fix": "npm run build && npx eslint ./src --fix",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
     "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
     "test:coverage": "jest --passWithNoTests --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.test.ts'",
     "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
-    "audit:check": "yarn npm audit",
+    "audit:check": "npm npm audit",
     "dep:check": "ncu -e 2",
     "dep:update": "ncu -u"
   },

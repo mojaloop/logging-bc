@@ -24,22 +24,22 @@
     "test:unit"
   ],
   "scripts": {
-    "start": "yarn run service",
+    "start": "npm run service",
     "service": "tsc && node dist/index.js --config ../../.env",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rm -Rf dist",
-    "pretest": "yarn run build",
-    "standard": "yarn run lint",
-    "lint": "yarn run build && npx eslint ./src",
-    "lint:fix": "yarn run build && npx eslint ./src --fix",
+    "pretest": "npm run build",
+    "standard": "npm run lint",
+    "lint": "npm run build && npx eslint ./src",
+    "lint:fix": "npm run build && npx eslint ./src --fix",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
     "test:coverage": "jest --passWithNoTests --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.test.ts'",
     "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
-    "audit:check": "yarn npm audit",
+    "audit:check": "npm npm audit",
     "dep:check": "ncu -e 2",
     "dep:update": "ncu -u",
-    "publish": "yarn run build && yarn version patch && yarn npm publish --tag=latest --access public"
+    "publish": "npm run build && npm version patch && npm npm publish --tag=latest --access public"
   },
   "devDependencies": {
     "eslint": "^8.14.0",
