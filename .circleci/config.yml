@@ -19,12 +19,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "yarn.lock" }}
+            - node_modules-cache-{{ checksum "package-lock.json" }}
       - run: npm install
       - save_cache:
           paths:
             - node_modules
-          key: node_modules-cache-{{ checksum "yarn.lock" }}
+          key: node_modules-cache-{{ checksum "package-lock.json" }}
       - persist_to_workspace:
           root: *workingDirVar
           paths:
@@ -36,7 +36,7 @@ jobs:
           at: *workingDirVar
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "yarn.lock" }}
+            - node_modules-cache-{{ checksum "package-lock.json" }}
       - run: npm run build
       - save_cache:
           paths:
@@ -53,7 +53,7 @@ jobs:
           at: *workingDirVar
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "yarn.lock" }}
+            - node_modules-cache-{{ checksum "package-lock.json" }}
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Execute unit tests
