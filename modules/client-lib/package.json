@@ -1,7 +1,7 @@
 {
   "name": "@mojaloop/logging-bc-client-lib",
   "version": "0.0.10",
-  "description": "mojaloop logging client lib d",
+  "description": "mojaloop logging client lib e",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/logging-bc/tree/main/modules/logging-svc",
   "bugs": {

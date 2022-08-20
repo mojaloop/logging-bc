@@ -9,9 +9,6 @@ parameters:
   publish:
     type: boolean
     default: false
-  publish_targets:
-    type: string
-    default: ""
 
 ##
 # Executors
@@ -81,6 +78,21 @@ jobs:
           name: Execute unit tests
           command: npm run test:unit
 
+  publish_immediate:
+    executor: default-docker
+    steps:
+      - attach_workspace:
+          at: *workingDirVar
+      - restore_cache:
+          keys:
+            - build-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+      - run:
+          name: Detect pubish targets
+          command: chmod +x .circleci/publish_immediate.sh && .circleci/publish_immediate.sh
+
   publish:
     executor: default-docker
     steps:
@@ -127,10 +139,15 @@ workflows:
           requires:
             - build
             - lint
-      - trigger-publish-workflows:
+      - publish_immediate:
           context: org-global
           requires:
             - test-unit
+
+#      - trigger-publish-workflows:
+#          context: org-global
+#          requires:
+#            - test-unit
   publish:
     when: << pipeline.parameters.publish >>
     jobs:
