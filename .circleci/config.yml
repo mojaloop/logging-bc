@@ -19,8 +19,8 @@ version: 2.1
 defaults_configure_git: &defaults_configure_git
   name: Configure git
   command: |
-    mkdir -p ~/.ssh/
-    ssh-keyscan github.com > ~/.ssh/known_hosts
+#    mkdir -p ~/.ssh/
+#    ssh-keyscan github.com > ~/.ssh/known_hosts
     git config user.email ${GIT_CI_EMAIL}
     git config user.name ${GIT_CI_USER}
 
@@ -99,6 +99,7 @@ jobs:
   publish_npm:
     executor: default-docker
     steps:
+      - checkout
       - attach_workspace:
           at: *workingDirVar
       - restore_cache:
