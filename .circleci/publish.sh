@@ -24,6 +24,7 @@ echo "Searching for changes ..."
 
 ## The CircleCI API parameters object
 PARAMETERS='"trigger":false'
+PUBLISH_TARGETS=""
 COUNT=0
 
 for PACKAGE in ${PACKAGES[@]}
@@ -35,13 +36,13 @@ do
 
   if [[ "$PACKAGE_IS_PRIVATE" == 'false' ]] && [[ -z "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]] || [[ "$CIRCLE_SHA1" == "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]]; then
         PARAMETERS+=", \"$PACKAGE\":true"
+        PUBLISH_TARGETS+"$PACKAGE,"
         COUNT=$((COUNT + 1))
         #echo -e "\e[36m  [+] ${PACKAGE} \e[21m (changed in [${LATEST_COMMIT_SINCE_LAST_BUILD:0:7}])\e[0m"
         echo -e "Package: ${PACKAGE} CHANGED!!"
   else
     echo -e "Package: ${PACKAGE} not changed or private"
   fi
-
 done
 
 if [[ $COUNT -eq 0 ]]; then
@@ -49,14 +50,14 @@ if [[ $COUNT -eq 0 ]]; then
   exit 0
 fi
 
-echo "Changes detected in ${COUNT} package(s)."
+echo "Changes detected in ${COUNT} package(s): ${PUBLISH_TARGETS}"
 
 
 ############################################
 ## 3. CicleCI REST API call
 ############################################
 #DATA="{ \"branch\": \"$CIRCLE_BRANCH\", \"parameters\": { $PARAMETERS } }"
-DATA="{ \"branch\": \"$CIRCLE_BRANCH\", \"parameters\": {  \"trigger\":false, \"publish\":true } }"
+DATA="{ \"branch\": \"$CIRCLE_BRANCH\", \"parameters\": {  \"trigger\":false, \"publish\":true, \"publish_targets\":\"${PUBLISH_TARGETS}\" } }"
 echo "Triggering pipeline with data:"
 echo -e "  $DATA"
 

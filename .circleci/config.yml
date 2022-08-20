@@ -9,6 +9,9 @@ parameters:
   publish:
     type: boolean
     default: false
+  publish_targets:
+    type: string
+    default: ""
 
 ##
 # Executors
@@ -73,7 +76,6 @@ jobs:
           at: *workingDirVar
       - restore_cache:
           keys:
-            - node_modules-cache-{{ checksum "package-lock.json" }}
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Execute unit tests
@@ -96,7 +98,11 @@ jobs:
   trigger-publish-workflows:
     executor: default-docker
     steps:
-      - checkout
+      - attach_workspace:
+          at: *workingDirVar
+      - restore_cache:
+          keys:
+            - build-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Trigger publish workflow
           command: chmod +x .circleci/publish.sh && .circleci/publish.sh
