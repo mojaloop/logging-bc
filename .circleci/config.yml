@@ -85,6 +85,10 @@ jobs:
           keys:
             - node_modules-cache-{{ checksum "package-lock.json" }}
             - build-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > .npmrc
+      - run: cat .npmrc
       - run: ls -la ./modules/logging-svc/dist/
       - run: echo "published!!!"
 
