@@ -72,9 +72,9 @@ if [[ $COUNT -gt 0 ]]; then
   echo -e "${COUNT} package(s) were published, committing new npm versions..."
 
   git status
-  git commit --amend -nm "$(git log -1 --pretty=%B) [ci skip]"
-  git status
+  git commit -nm "$(git log -1 --pretty=%B) (circleci auto versions update) [ci skip]"
 
+  git status
   git push -f origin $CIRCLE_BRANCH --tags
 
   echo -e "new npm versions committed and pushed, all done."
