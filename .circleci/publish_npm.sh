@@ -53,11 +53,15 @@ do
         echo $PACKAGE_NAME
 
         npm -w ${PACKAGE_NAME} version patch
+
+        PACKAGE_VERSION=$(cat ${PACKAGE_PATH}/package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[ ",]//g')
+
         npm -w ${PACKAGE_NAME} publish --tag=latest --access public
 
         if [[ $? -eq 0 ]]; then
           echo -e "Package: ${PACKAGE} Publishing complete"
           git add ${PACKAGE_PATH}/package.json
+          git tag ${PACKAGE}_v${PACKAGE_VERSION}
         else
           echo -e "Package: ${PACKAGE} Publishing error... exiting"
           exit 1
