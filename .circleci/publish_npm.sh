@@ -57,6 +57,7 @@ do
 
         if [[ $? -eq 0 ]]; then
           echo -e "Package: ${PACKAGE} Publishing complete"
+          git add ${PACKAGE_PATH}/package.json
         else
           echo -e "Package: ${PACKAGE} Publishing error... exiting"
           exit 1
