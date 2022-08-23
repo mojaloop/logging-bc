@@ -29,7 +29,7 @@ echo -e "Current CI Build commit hash: ${CIRCLE_SHA1}"
 LAST_CI_BUILD_COMMIT=$(cat .lastcibuild)
 echo -e "Last successful CI Build commit hash: ${LAST_CI_BUILD_COMMIT}"
 
-if [[ -z "${LAST_CI_BUILD_COMMIT}"]]; then
+if [[ -z "${LAST_CI_BUILD_COMMIT}" ]]; then
   COMMITS_SINCE_LAST_CI_BUILD=$(git --no-pager log ${CIRCLE_SHA1} --pretty=format:%H)
 else
   COMMITS_SINCE_LAST_CI_BUILD=$(git --no-pager log ${LAST_CI_BUILD_COMMIT}..${CIRCLE_SHA1} --pretty=format:%H)
