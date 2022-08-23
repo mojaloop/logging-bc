@@ -25,10 +25,15 @@ fi
 
 echo -e "Current CI Build commit hash: ${CIRCLE_SHA1}"
 
-LAST_CI_BUILD_COMMIT=$(curl -Ss -u "$CIRCLE_TOKEN:" "https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME?filter=completed&limit=1" | grep "vcs_revision" | head -1 | awk -F: '{print $2}' | sed 's/[ ",]//g')
+#LAST_CI_BUILD_COMMIT=$(curl -Ss -u "$CIRCLE_TOKEN:" "https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME?filter=completed&limit=1" | grep "vcs_revision" | head -1 | awk -F: '{print $2}' | sed 's/[ ",]//g')
+LAST_CI_BUILD_COMMIT=$(cat .lastcibuild)
 echo -e "Last successful CI Build commit hash: ${LAST_CI_BUILD_COMMIT}"
 
-COMMITS_SINCE_LAST_CI_BUILD=$(git --no-pager log ${LAST_CI_BUILD_COMMIT}..${CIRCLE_SHA1} --pretty=format:%H)
+if [[ -z "${LAST_CI_BUILD_COMMIT}"]]; then
+  COMMITS_SINCE_LAST_CI_BUILD=$(git --no-pager log ${CIRCLE_SHA1} --pretty=format:%H)
+else
+  COMMITS_SINCE_LAST_CI_BUILD=$(git --no-pager log ${LAST_CI_BUILD_COMMIT}..${CIRCLE_SHA1} --pretty=format:%H)
+fi
 echo -e "\nCommits between last successful CI Build and this one:\n${COMMITS_SINCE_LAST_CI_BUILD}"
 
 ############################################
@@ -123,6 +128,10 @@ done
 printHeader "Phase 4 - Pushing commits to git"
 
 if [[ PUBLISHED_PACKAGES_COUNT -gt 0 ]]; then
+  # store the this build commit ID as file
+  echo ${CIRCLE_SHA1} > .lastcibuild
+  git add .lastcibuild
+
   echo -e "${PUBLISHED_PACKAGES_COUNT} package(s) were published, committing changed 'package.json' files..."
 
 # git status
