@@ -17,7 +17,6 @@ ROOT="./modules"
 REPOSITORY_TYPE="github"
 CIRCLE_API="https://circleci.com/api"
 
-
 if [[ -z "${CIRCLE_SHA1}" ]]; then
     echo -e "\e[93mEnvironment variable CIRCLE_SHA1 is not set. Exiting.\e[0m"
   exit 1
@@ -73,9 +72,8 @@ do
   fi
 done
 
-
 if [[ PACKAGES_TO_PUBLISH_COUNT -le 0 ]]; then
-  echo -e "\nDidn't find any packages that needed publishing, done"
+  echo -e "\nDONE - Didn't find any packages that needed publishing, all done."
   exit 0
 fi
 
@@ -105,10 +103,10 @@ do
   echo -e "Package current version: ${PACKAGE_CUR_VERSION} new version: ${PACKAGE_NEW_VERSION} (to be published)"
   echo -e "Publishing..."
 
-  echo -e "---------------- PUBLISH START ----------------------"
+  echo -e "---------------- PUBLISH START ----------------------\n"
   # actual publish command
   npm -w ${PACKAGE_NAME} publish --tag=latest --access public
-  echo -e "----------------- PUBLISH END -----------------------"
+  echo -e "\n----------------- PUBLISH END -----------------------"
 
   if [[ $? -eq 0 ]]; then
     PUBLISHED_PACKAGES_COUNT=$((PUBLISHED_PACKAGES_COUNT + 1))
@@ -135,7 +133,7 @@ if [[ PUBLISHED_PACKAGES_COUNT -gt 0 ]]; then
   echo -e "${PUBLISHED_PACKAGES_COUNT} package(s) were published, committing changed 'package.json' files..."
 
 # git status
-  git commit -nm "$(git log -1 --pretty=%B) (circleci auto versions update) [ci skip]"
+  git commit -nm "CI/CD auto commit for: $(git log -1 --pretty=%B) [ci skip]"
 
   echo -e "Pushing commits..."
 #  git status
