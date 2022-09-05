@@ -16,6 +16,7 @@ printHeader "Phase 1 - Setup"
 ROOT="./modules"
 REPOSITORY_TYPE="github"
 CIRCLE_API="https://circleci.com/api"
+LASTCIBUILDFILE=".lastcibuild"
 
 if [[ -z "${CIRCLE_SHA1}" ]]; then
     echo -e "\e[93mEnvironment variable CIRCLE_SHA1 is not set. Exiting.\e[0m"
@@ -25,7 +26,7 @@ fi
 echo -e "Current CI Build commit hash: ${CIRCLE_SHA1}"
 
 #LAST_CI_BUILD_COMMIT=$(curl -Ss -u "$CIRCLE_TOKEN:" "https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME?filter=completed&limit=1" | grep "vcs_revision" | head -1 | awk -F: '{print $2}' | sed 's/[ ",]//g')
-LAST_CI_BUILD_COMMIT=$(cat .lastcibuild)
+LAST_CI_BUILD_COMMIT=$(cat ${LASTCIBUILDFILE})
 echo -e "Last successful CI Build commit hash: ${LAST_CI_BUILD_COMMIT}"
 
 if [[ -z "${LAST_CI_BUILD_COMMIT}" ]]; then
@@ -59,16 +60,14 @@ do
 
   echo -e "\tPackage last change commit: ${PACKAGE_LAST_CHANGE_COMMIT_SHA} - Private: ${PACKAGE_IS_PRIVATE}"
 
-  if [[ "$PACKAGE_IS_PRIVATE" == 'false' ]] && [[ -z "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]] || [[ $COMMITS_SINCE_LAST_CI_BUILD == *"$PACKAGE_LAST_CHANGE_COMMIT_SHA"* ]]; then
-        PACKAGES_TO_PUBLISH+="$PACKAGE "
-        PACKAGES_TO_PUBLISH_COUNT=$((PACKAGES_TO_PUBLISH_COUNT + 1))
-        echo -e "\tPackage changed since last CI build - adding to the list"
+  if [[ "$PACKAGE_IS_PRIVATE" != "false" ]]; then
+    echo -e "\tPackage is private - ignoring"
+  elif [[ -z "$PACKAGE_LAST_CHANGE_COMMIT_SHA" ]] || [[ $COMMITS_SINCE_LAST_CI_BUILD == *"$PACKAGE_LAST_CHANGE_COMMIT_SHA"* ]]; then
+    PACKAGES_TO_PUBLISH+="$PACKAGE "
+    PACKAGES_TO_PUBLISH_COUNT=$((PACKAGES_TO_PUBLISH_COUNT + 1))
+    echo -e "\tPackage changed since last CI build - adding to the list"
   else
-    if [[ "$PACKAGE_IS_PRIVATE" == 'true' ]]; then
-      echo -e "\tPackage is private - ignoring"
-    else
-      echo -e "\tPackage not changed since last CI build - ignoring"
-    fi
+    echo -e "\tPackage not changed since last CI build - ignoring"
   fi
 done
 
@@ -106,9 +105,10 @@ do
   echo -e "---------------- PUBLISH START ----------------------\n"
   # actual publish command
   npm -w ${PACKAGE_NAME} publish --tag=latest --access public
+  PUB_SUCCESS=$?
   echo -e "\n----------------- PUBLISH END -----------------------"
 
-  if [[ $? -eq 0 ]]; then
+  if [[ $PUB_SUCCESS -eq 0 ]]; then
     PUBLISHED_PACKAGES_COUNT=$((PUBLISHED_PACKAGES_COUNT + 1))
     TAG_NAME=${PACKAGE}_v${PACKAGE_NEW_VERSION}
     echo -e "Successfully published - git staging '${PACKAGE_PATH}/package.json' and creating tag: '${TAG_NAME}'"
@@ -126,20 +126,25 @@ done
 printHeader "Phase 4 - Pushing commits to git"
 
 if [[ PUBLISHED_PACKAGES_COUNT -gt 0 ]]; then
-  # store the this build commit ID as file
-  echo ${CIRCLE_SHA1} > .lastcibuild
-  git add .lastcibuild
+  # store the commit ID of the current commit for future CI/C reference
+  echo ${CIRCLE_SHA1} > ${LASTCIBUILDFILE}
+  #git --no-pager log -1 --pretty=%H > ${LASTCIBUILDFILE}
+  git add ${LASTCIBUILDFILE}
 
+  # commit the updated package.json files and LASTCIBUILDFILE
   echo -e "${PUBLISHED_PACKAGES_COUNT} package(s) were published, committing changed 'package.json' files..."
+  git commit -nm "CI/CD auto commit for: '$(git log -1 --pretty=%B)' [ci skip]"
 
-# git status
-  git commit -nm "CI/CD auto commit for: $(git log -1 --pretty=%B) [ci skip]"
-
-  echo -e "Pushing commits..."
-#  git status
+  echo -e "Pushing changes..."
+  # git status
   git push -f origin $CIRCLE_BRANCH --tags
 
-  echo -e "\nDONE - ${PUBLISHED_PACKAGES_COUNT} package(s) were published, all done."
+  if [[ $? -eq 0 ]]; then
+    echo -e "\nDONE - ${PUBLISHED_PACKAGES_COUNT} package(s) were published and version changes pushed, all done."
+  else
+    echo -e "Error pushing CI/CD auto commits for version changes - exiting"
+    exit 5
+  fi
 else
   echo -e "${PUBLISHED_PACKAGES_COUNT} Packages were found to be published, but none was successfully published, error."
   exit 9

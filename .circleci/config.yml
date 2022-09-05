@@ -34,6 +34,7 @@ defaults_npm_auth: &defaults_npm_auth
 executors:
   default-docker:
     working_directory: &workingDirVar /home/circleci/project
+    resource_class: medium
     docker:
       - image: node:16.13
 
@@ -109,7 +110,7 @@ jobs:
           <<: *defaults_configure_git
       - run:
           <<: *defaults_npm_auth
-#      - run: cat ~/.npmrc
+      #      - run: cat ~/.npmrc
       - run: npm config set registry https://registry.npmjs.org/
       - run:
           name: Detect and publish modules
@@ -119,7 +120,7 @@ jobs:
 workflows:
   version: 2
   build_lint_and_test:
-#    when: << pipeline.parameters.trigger >>
+    #    when: << pipeline.parameters.trigger >>
     jobs:
       - setup:
           context: org-global
