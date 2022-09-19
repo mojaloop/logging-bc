@@ -18,15 +18,14 @@
     "/dist"
   ],
   "scripts": {
-    "start": "npm run service",
-    "service": "tsc && npm node dist/application/index.js",
+    "start": "node dist/application/index.js",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rm -Rf dist",
     "pretest": "npm run build",
     "standard": "npm run lint",
-    "lint": "npm run build && npx eslint ./src",
-    "lint:fix": "npm run build && npx eslint ./src --fix",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
     "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
     "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
     "test:coverage": "jest --passWithNoTests --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.test.ts'",
