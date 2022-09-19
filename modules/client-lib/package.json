@@ -17,12 +17,6 @@
   "files": [
     "/dist"
   ],
-  "pre-commit": [
-    "dep:check",
-    "build",
-    "lint",
-    "test:unit"
-  ],
   "scripts": {
     "start": "node dist/application/index.js",
     "build": "tsc",

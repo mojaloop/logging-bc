@@ -147,18 +147,18 @@ volumes:
       o: bind
       type: none
       device: ./esdata01
-  esdata02:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./esdata02
-  esdata03:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ./esdata03
+#  esdata02:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: ./esdata02
+#  esdata03:
+#    driver: local
+#    driver_opts:
+#      o: bind
+#      type: none
+#      device: ./esdata03
   kibanadata:
     driver: local
     driver_opts:

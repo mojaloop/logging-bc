@@ -57,21 +57,23 @@ const APP_NAME = "client-lib-integration-tests";
 const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
 
+const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
+
 const TOPIC_NAME = "client-lib-integration-tests-logs-topic";
 
 describe("client-lib-integration-tests", () => {
 
   beforeAll(async () => {
     producerOptions = {
-      kafkaBrokerList: "localhost:9092",
+      kafkaBrokerList: KAFKA_URL,
       producerClientId: APP_NAME
     }
 
     kafkaLogger = new KafkaLogger(BC_NAME, APP_NAME, APP_VERSION, producerOptions, TOPIC_NAME, LogLevel.TRACE);
-    await kafkaLogger.start();
+    await kafkaLogger.init();
 
     consumerOptions = {
-      kafkaBrokerList: "localhost:9092",
+      kafkaBrokerList: KAFKA_URL,
       kafkaGroupId: APP_NAME,
       outputType: MLKafkaConsumerOutputType.Json
     };
@@ -97,6 +99,7 @@ describe("client-lib-integration-tests", () => {
     kafkaConsumer.setTopics([TOPIC_NAME]);
     await kafkaConsumer.connect();
     await kafkaConsumer.start();
+    await new Promise(f => setTimeout(f, 100));
 
     await kafkaLogger.trace("Logger message. Hello World! Lets trace.");
     await kafkaLogger.debug("Logger message. Hello World! Lets debug.");

@@ -9,6 +9,7 @@ const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
 
 
+
 function log(logger:DefaultLogger, testObj:any){
   logger.trace(`${logger.getLogLevel()} - hello world from trace`, testObj);
   logger.debug(`${logger.getLogLevel()} - hello world from debug`, testObj);

@@ -17,12 +17,6 @@
   "files": [
     "/dist"
   ],
-  "pre-commit": [
-    "dep:check",
-    "build",
-    "lint",
-    "test:unit"
-  ],
   "scripts": {
     "start": "npm run service",
     "service": "tsc && npm node dist/application/index.js",
