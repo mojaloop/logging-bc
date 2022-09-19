@@ -49,24 +49,25 @@ const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
 const ES_LOGS_INDEX = "mjl-logging";
 const TOPIC_NAME = "logging-svc-integration-tests-logs-topic";
+const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
+const ELASTICSEARCH_URL = process.env["ELASTICSEARCH_URL"] || "https://localhost:9200";
 
 let producerOptions: MLKafkaProducerOptions;
+
 let kafkaConsumer: MLKafkaConsumer;
-
 let consumerOptions: MLKafkaConsumerOptions;
-let elasticStorage:ElasticsearchLogStorage;
 
+let elasticStorage:ElasticsearchLogStorage;
 let logEvtHandlerForES:LogEventHandler;
 let kafkaLogger : KafkaLogger;
 const defaultLogger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
-
 
 describe("nodejs-rdkafka-log-bc", () => {
   jest.setTimeout(10000);
 
   beforeAll(async () => {
     producerOptions = {
-      kafkaBrokerList: "localhost:9092",
+      kafkaBrokerList: KAFKA_URL,
     }
 
     kafkaLogger = new KafkaLogger(
@@ -77,11 +78,11 @@ describe("nodejs-rdkafka-log-bc", () => {
             TOPIC_NAME,
             LOGLEVEL
     );
-    await kafkaLogger.start();
+    await kafkaLogger.init();
 
     // Command Handler
     consumerOptions = {
-      kafkaBrokerList: "localhost:9092",
+      kafkaBrokerList: KAFKA_URL,
       kafkaGroupId: "test_consumer_group",
       outputType: MLKafkaConsumerOutputType.Json
     };
@@ -96,7 +97,7 @@ describe("nodejs-rdkafka-log-bc", () => {
   test("produce and consume log-bc using kafka and elasticsearch", async () => {
     // Startup Handler
     //Elastic
-    const elasticOpts = { node: "https://localhost:9200",
+    const elasticOpts = { node: ELASTICSEARCH_URL,
       auth: {
         username: "elastic",
         password: process.env.elasticsearch_password || "123@Edd!1234SS",

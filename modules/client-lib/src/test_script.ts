@@ -35,8 +35,11 @@ const APP_NAME = "client-lib";
 const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
 const KAFKA_LOGS_TOPIC = "logs";
+
+const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
+
 const kafkaProducerOptions = {
-    kafkaBrokerList: "localhost:9092"
+    kafkaBrokerList: KAFKA_URL
 }
 
 let logger: ILogger;

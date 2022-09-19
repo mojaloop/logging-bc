@@ -61,7 +61,7 @@ class KafkaLoggerTransport extends Transport {
     await this._kafkaProducer.connect();
   }
 
-  async destroyKafkaProducer(): Promise<void> {
+  async stop(): Promise<void> {
     return this._kafkaProducer.destroy();
   }
 
@@ -130,13 +130,20 @@ export class KafkaLogger extends DefaultLogger implements ILogger{
     return childILogger;
   }
 
+  /**
+   * @deprecated - use init() instead
+   */
   async start() : Promise<void>  {
+    return this.init();
+  }
+
+  async init() : Promise<void>  {
     await this._kafkaTransport.start();
   }
 
   async destroy() : Promise<void>  {
     await this._logger.end();
-    return await this._kafkaTransport.destroyKafkaProducer();
+    return await this._kafkaTransport.stop();
   }
 
 }

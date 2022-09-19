@@ -98,7 +98,7 @@ async function start(){
             kafkaLogsTopic,
             LOGLEVEL
     );
-    await (logger as KafkaLogger).start();
+    await (logger as KafkaLogger).init();
 
     // use the same way as any other ILogger
     // ex: 
