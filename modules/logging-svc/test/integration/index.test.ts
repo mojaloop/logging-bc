@@ -32,10 +32,10 @@
 
 import {LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib"
 import {
-  MLKafkaConsumer,
-  MLKafkaConsumerOptions,
-  MLKafkaConsumerOutputType,
-  MLKafkaProducerOptions
+  MLKafkaRawConsumer,
+  MLKafkaRawConsumerOptions,
+  MLKafkaRawConsumerOutputType,
+  MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib"
 
 import {DefaultLogger, KafkaLogger } from "@mojaloop/logging-bc-client-lib";
@@ -48,14 +48,15 @@ const APP_NAME = "client-lib-integration-tests";
 const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
 const ES_LOGS_INDEX = "mjl-logging";
-const TOPIC_NAME = "logging-svc-integration-tests-logs-topic";
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 const ELASTICSEARCH_URL = process.env["ELASTICSEARCH_URL"] || "https://localhost:9200";
 
-let producerOptions: MLKafkaProducerOptions;
+const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "logging-svc-integration-tests-logs-topic";
 
-let kafkaConsumer: MLKafkaConsumer;
-let consumerOptions: MLKafkaConsumerOptions;
+let producerOptions: MLKafkaRawProducerOptions;
+
+let kafkaConsumer: MLKafkaRawConsumer;
+let consumerOptions: MLKafkaRawConsumerOptions;
 
 let elasticStorage:ElasticsearchLogStorage;
 let logEvtHandlerForES:LogEventHandler;
@@ -75,7 +76,7 @@ describe("nodejs-rdkafka-log-bc", () => {
             APP_NAME,
             APP_VERSION,
             producerOptions,
-            TOPIC_NAME,
+            KAFKA_LOGS_TOPIC,
             LOGLEVEL
     );
     await kafkaLogger.init();
@@ -84,7 +85,7 @@ describe("nodejs-rdkafka-log-bc", () => {
     consumerOptions = {
       kafkaBrokerList: KAFKA_URL,
       kafkaGroupId: "test_consumer_group",
-      outputType: MLKafkaConsumerOutputType.Json
+      outputType: MLKafkaRawConsumerOutputType.Json
     };
   })
 
@@ -108,7 +109,7 @@ describe("nodejs-rdkafka-log-bc", () => {
       }
     };
     elasticStorage = new ElasticsearchLogStorage(elasticOpts, ES_LOGS_INDEX, defaultLogger);
-    logEvtHandlerForES = new LogEventHandler(defaultLogger, elasticStorage, consumerOptions, TOPIC_NAME);
+    logEvtHandlerForES = new LogEventHandler(defaultLogger, elasticStorage, KAFKA_URL, `${BC_NAME}_${APP_NAME}`, KAFKA_LOGS_TOPIC);
     await logEvtHandlerForES.init();
 
     await kafkaLogger.info("Logger message. Hello World! Info.");

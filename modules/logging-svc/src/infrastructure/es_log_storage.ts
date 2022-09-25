@@ -28,7 +28,7 @@
  --------------
  ******/
 
-"use strict"
+"use strict";
 
 import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {IStorage} from "../application/log_event_handler";
@@ -71,7 +71,7 @@ export class ElasticsearchLogStorage implements IStorage {
                     component: itm.component
                 };
                 if(itm.meta && itm.meta.error){
-                    doc.error = itm.meta.error
+                    doc.error = itm.meta.error;
                 }
                 if(itm.meta){
                     doc.meta = itm.meta;

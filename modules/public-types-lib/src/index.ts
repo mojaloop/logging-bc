@@ -35,7 +35,7 @@
  --------------
  ******/
 
-"use strict"
+"use strict";
 
 export {ConsoleLogger} from "./console_logger";
 

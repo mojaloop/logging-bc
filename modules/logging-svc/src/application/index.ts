@@ -25,24 +25,22 @@
  --------------
  ******/
 
-"use strict"
-
+"use strict";
 import {LogEventHandler} from "./log_event_handler";
-import {ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
+import {LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {ElasticsearchLogStorage} from "../infrastructure/es_log_storage";
-import {MLKafkaConsumerOutputType} from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib/dist/index";
 import {DefaultLogger} from "@mojaloop/logging-bc-client-lib";
 
 const BC_NAME = "logging-bc";
 const APP_NAME = "logging-svc";
-const APP_VERSION = "0.0.1";
+const APP_VERSION = process.env.npm_package_version || "0.0.1";
 const LOGLEVEL = LogLevel.DEBUG;
 
 const KAFKA_LOGS_TOPIC = "logs";
 
-const ES_LOGS_INDEX = "mjl-logging";
-const DEV_ES_USERNAME = "elastic";
-const DEV_ES_PASSWORD = "123@Edd!1234SS";
+const ELASTICSEARCH_LOGS_INDEX =  process.env["ELASTICSEARCH_LOGS_INDEX"] || "mjl-logging";
+const ELASTICSEARCH_USERNAME =  process.env["ELASTICSEARCH_USERNAME"] || "elastic";
+const ELASTICSEARCH_PASSWORD =  process.env["ELASTICSEARCH_PASSWORD"] ||  "123@Edd!1234SS";
 
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 const ELASTICSEARCH_URL = process.env["ELASTICSEARCH_URL"] || "https://localhost:9200";
@@ -51,8 +49,8 @@ const ELASTICSEARCH_URL = process.env["ELASTICSEARCH_URL"] || "https://localhost
 const elasticOpts = {
     node: ELASTICSEARCH_URL,
     auth: {
-        username: process.env.ES_USERNAME || DEV_ES_USERNAME,
-        password: process.env.ES_PASSWORD || DEV_ES_PASSWORD,
+        username: process.env.ES_USERNAME || ELASTICSEARCH_USERNAME,
+        password: process.env.ES_PASSWORD || ELASTICSEARCH_PASSWORD,
     },
     tls: {
         ca: process.env.elasticsearch_certificate,
@@ -60,22 +58,14 @@ const elasticOpts = {
     }
 };
 
-// Command Handler
-const kafkaConsumerOptions = {
-    kafkaBrokerList: KAFKA_URL,
-    kafkaGroupId: `${BC_NAME}_${APP_NAME}`,
-    outputType: MLKafkaConsumerOutputType.Json
-}
-
-
 const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 let logHandler:LogEventHandler;
 
 
 async function start():Promise<void> {
-    const storage = new ElasticsearchLogStorage(elasticOpts, ES_LOGS_INDEX, logger);
+    const storage = new ElasticsearchLogStorage(elasticOpts, ELASTICSEARCH_LOGS_INDEX, logger);
 
-    logHandler = new LogEventHandler(logger, storage, kafkaConsumerOptions, KAFKA_LOGS_TOPIC);
+    logHandler = new LogEventHandler(logger, storage, KAFKA_URL, `${BC_NAME}_${APP_NAME}`, KAFKA_LOGS_TOPIC);
 
     await logHandler.init().catch((err) => {
         logger.error("logHandler init error", err);
@@ -83,8 +73,6 @@ async function start():Promise<void> {
 
     logger.info("logHandler initialised");
 }
-
-
 
 async function _handle_int_and_term_signals(signal: NodeJS.Signals): Promise<void> {
     logger.info(`Service - ${signal} received - cleaning up...`);

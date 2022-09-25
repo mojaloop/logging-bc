@@ -35,19 +35,17 @@
  --------------
  ******/
 
-"use strict"
-
-import * as Winston from "winston"
+"use strict";
 
 /* eslint-disable no-console */
 
-import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib"
+import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib";
 
 export abstract class BaseLogger implements ILogger {
     protected _bcName:string;
     protected _appName:string;
     protected _appVersion:string;
-    protected _logLevel: LogLevel = LogLevel.DEBUG // default
+    protected _logLevel: LogLevel = LogLevel.DEBUG; // default
 
     public componentName: string | null;
 
@@ -89,10 +87,10 @@ export abstract class BaseLogger implements ILogger {
         return this._logLevel === LogLevel.FATAL || this.isErrorEnabled();
     }
 
-    abstract trace (message?: any, ...optionalParams: any[]): void
-    abstract debug (message?: any, ...optionalParams: any[]): void
-    abstract info (message?: any, ...optionalParams: any[]): void
-    abstract warn (message?: any, ...optionalParams: any[]): void
-    abstract error (message?: any, ...optionalParams: any[]): void
-    abstract fatal (message?: any, ...optionalParams: any[]): void
+    abstract trace (message?: any, ...optionalParams: any[]): void;
+    abstract debug (message?: any, ...optionalParams: any[]): void;
+    abstract info (message?: any, ...optionalParams: any[]): void;
+    abstract warn (message?: any, ...optionalParams: any[]): void;
+    abstract error (message?: any, ...optionalParams: any[]): void;
+    abstract fatal (message?: any, ...optionalParams: any[]): void;
 }

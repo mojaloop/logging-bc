@@ -28,11 +28,14 @@
  --------------
 ******/
 
-"use strict"
+"use strict";
 
-import { ILogger, LogLevel, LogEntry } from "@mojaloop/logging-bc-public-types-lib"
+import { ILogger, LogLevel, LogEntry } from "@mojaloop/logging-bc-public-types-lib";
 import {DefaultLogger} from "./default_logger";
-import { MLKafkaProducer, MLKafkaProducerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib"
+import {
+  MLKafkaRawProducer,
+  MLKafkaRawProducerOptions
+} from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 import Transport from "winston-transport";
 import Winston from "winston";
 
@@ -40,12 +43,12 @@ import Winston from "winston";
 let globalKafkaLoggerTransport: KafkaLoggerTransport| null = null;
 
 class KafkaLoggerTransport extends Transport {
-  _producerOptions: MLKafkaProducerOptions;
-  _kafkaProducer: MLKafkaProducer;
+  _producerOptions: MLKafkaRawProducerOptions;
+  _kafkaProducer: MLKafkaRawProducer;
   _kafkaTopic: string;
   _ready = false;
 
-  constructor(opts:{producerOptions: MLKafkaProducerOptions, kafkaTopic: string}) {
+  constructor(opts:{producerOptions: MLKafkaRawProducerOptions, kafkaTopic: string}) {
     super();
 
     if(!opts.producerOptions.producerClientId){
@@ -54,7 +57,7 @@ class KafkaLoggerTransport extends Transport {
 
     this._producerOptions = opts.producerOptions;
     this._kafkaTopic = opts.kafkaTopic;
-    this._kafkaProducer = new MLKafkaProducer(this._producerOptions);
+    this._kafkaProducer = new MLKafkaRawProducer(this._producerOptions);
   }
 
   async start(): Promise<void>{
@@ -76,7 +79,7 @@ class KafkaLoggerTransport extends Transport {
       component: info.componentName,
       meta: info.extra
     };
-
+    
     await this._kafkaProducer.send({
       topic: this._kafkaTopic,
       value: logEntry,
@@ -94,13 +97,13 @@ class KafkaLoggerTransport extends Transport {
 
 
 export class KafkaLogger extends DefaultLogger implements ILogger{
-  _producerOptions: MLKafkaProducerOptions;
+  _producerOptions: MLKafkaRawProducerOptions;
   _kafkaTopic: string;
   _kafkaTransport: KafkaLoggerTransport;
   _ready = false;
 
   constructor (bcName:string, appName:string, appVersion:string,
-               producerOptions: MLKafkaProducerOptions,
+               producerOptions: MLKafkaRawProducerOptions,
                kafkaTopic : string,
                level: LogLevel = LogLevel.INFO,
                loggerInstance?:Winston.Logger

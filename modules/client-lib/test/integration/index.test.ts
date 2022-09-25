@@ -31,10 +31,11 @@
 "use strict"
 
 import {
-  MLKafkaConsumer,
-  MLKafkaConsumerOptions,
-  MLKafkaConsumerOutputType,
-  MLKafkaProducerOptions
+  IRawMessage,
+  MLKafkaRawConsumer,
+  MLKafkaRawConsumerOptions,
+  MLKafkaRawConsumerOutputType,
+  MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
 
@@ -46,9 +47,9 @@ import {KafkaLogger} from "../../src/kafka_logger";
 
 const logger: ConsoleLogger = new ConsoleLogger();
 
-let producerOptions: MLKafkaProducerOptions;
-let kafkaConsumer: MLKafkaConsumer;
-let consumerOptions: MLKafkaConsumerOptions;
+let producerOptions: MLKafkaRawProducerOptions;
+let kafkaConsumer: MLKafkaRawConsumer;
+let consumerOptions: MLKafkaRawConsumerOptions;
 
 let kafkaLogger : KafkaLogger;
 
@@ -59,7 +60,7 @@ const LOGLEVEL = LogLevel.TRACE;
 
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 
-const TOPIC_NAME = "client-lib-integration-tests-logs-topic";
+const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "client-lib-integration-tests-logs-topic";
 
 describe("client-lib-integration-tests", () => {
 
@@ -69,16 +70,16 @@ describe("client-lib-integration-tests", () => {
       producerClientId: APP_NAME
     }
 
-    kafkaLogger = new KafkaLogger(BC_NAME, APP_NAME, APP_VERSION, producerOptions, TOPIC_NAME, LogLevel.TRACE);
+    kafkaLogger = new KafkaLogger(BC_NAME, APP_NAME, APP_VERSION, producerOptions, KAFKA_LOGS_TOPIC, LogLevel.TRACE);
     await kafkaLogger.init();
 
     consumerOptions = {
       kafkaBrokerList: KAFKA_URL,
       kafkaGroupId: APP_NAME,
-      outputType: MLKafkaConsumerOutputType.Json
+      outputType: MLKafkaRawConsumerOutputType.Json
     };
 
-    kafkaConsumer = new MLKafkaConsumer(consumerOptions, logger);
+    kafkaConsumer = new MLKafkaRawConsumer(consumerOptions, logger);
   })
 
   afterAll(async () => {
@@ -89,14 +90,14 @@ describe("client-lib-integration-tests", () => {
 
   test("produce and consume logs using the KafkaLogger", async () => {
     let receivedMessages = 0;
-    async function handleLogMsg (message: IMessage): Promise<void> {
+    async function handleLogMsg (message: IRawMessage): Promise<void> {
       receivedMessages++;
-      logger.debug(`Got log message in handler: ${JSON.stringify(message, null, 2)}`);
+      logger.debug(`Got log message in handler: ${JSON.stringify(message.value, null, 2)}`);
       return await Promise.resolve();
     }
 
     kafkaConsumer.setCallbackFn(handleLogMsg);
-    kafkaConsumer.setTopics([TOPIC_NAME]);
+    kafkaConsumer.setTopics([KAFKA_LOGS_TOPIC]);
     await kafkaConsumer.connect();
     await kafkaConsumer.start();
     await new Promise(f => setTimeout(f, 100));

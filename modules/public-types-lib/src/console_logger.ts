@@ -28,12 +28,12 @@
  --------------
  ******/
 
-"use strict"
+"use strict";
 
 import {ILogger, LogLevel} from "./index";
 
 export class ConsoleLogger implements ILogger {
-    protected _logLevel: LogLevel = LogLevel.DEBUG // default
+    protected _logLevel: LogLevel = LogLevel.DEBUG; // default
 
     createChild(componentName:string):ILogger{
         throw new Error("Not implemented in ConsoleLogger");

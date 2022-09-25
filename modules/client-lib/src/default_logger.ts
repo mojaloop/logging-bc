@@ -28,12 +28,12 @@
  --------------
  ******/
 
-"use strict"
+"use strict";
 
 /* eslint-disable no-console */
-import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib"
-import { BaseLogger } from "./base_logger"
-import * as Winston from "winston"
+import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib";
+import { BaseLogger } from "./base_logger";
+import * as Winston from "winston";
 
  //const logLevelPriority: Winston.config.AbstractConfigSetLevels = {
 const customLevels = {
@@ -53,7 +53,7 @@ const customLevels = {
         debug: "green",
         trace: "grey",
     }
-}
+};
 
 //colorizer.addColors(customLevels.colors);
 
@@ -123,7 +123,7 @@ export class DefaultLogger extends BaseLogger implements ILogger {
                 parsedMeta.error = {
                     message: meta[0].message,
                     stack: meta[0].stack
-                }
+                };
             }else if(Array.isArray(meta[0]) || meta.length>1){
                 parsedMeta.arr = meta[0];
             }else{
