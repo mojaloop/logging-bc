@@ -40,13 +40,14 @@ import {MLKafkaRawConsumerOutputType} from "@mojaloop/platform-shared-lib-nodejs
 
 
 //Since the engine/processor will not be dynamic.
-export interface IStorage {
+export interface ILogStorageAdapter {
   store(entries: LogEntry[]): Promise<void>;
   init () : Promise<void>;
+  destroy () : Promise<void>;
 }
 
 export class LogEventHandler {
-  private _storage : IStorage;
+  private _storage : ILogStorageAdapter;
   private _logger: ILogger;
   private _consumerOpts : MLKafkaRawConsumerOptions;
   private _kafkaTopic : string;
@@ -54,12 +55,12 @@ export class LogEventHandler {
 
   constructor(
       logger: ILogger,
-      storage : IStorage,
+      storage : ILogStorageAdapter,
       kafkaURL: string,
       kafkaGroupId: string,
       kafkaTopic : string
   ) {
-    this._logger = logger;
+    this._logger = logger.createChild(this.constructor.name);
     this._storage = storage;
     this._kafkaTopic = kafkaTopic;
 

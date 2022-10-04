@@ -31,11 +31,11 @@
 "use strict";
 
 import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
-import {IStorage} from "../application/log_event_handler";
+import {ILogStorageAdapter} from "../application/log_event_handler";
 import {Client} from "@elastic/elasticsearch";
 import {ClientOptions} from "@elastic/elasticsearch/lib/client";
 
-export class ElasticsearchLogStorage implements IStorage {
+export class ElasticsearchLogStorage implements ILogStorageAdapter {
     private _client: Client;
     private _clientOps: ClientOptions;
     private _index: string;
@@ -44,7 +44,7 @@ export class ElasticsearchLogStorage implements IStorage {
     constructor(opts: ClientOptions, index: string, logger:ILogger) {
         this._clientOps = opts;
         this._index = index;
-        this._logger = logger;
+        this._logger = logger.createChild(this.constructor.name);
         this._client = new Client(this._clientOps);
     }
 
@@ -86,5 +86,10 @@ export class ElasticsearchLogStorage implements IStorage {
         } catch (err) {
             this._logger.error("ElasticsearchLogStorage error", err);
         }
+    }
+
+    async destroy():Promise<void>{
+        await this._client.close();
+        return Promise.resolve();
     }
 }

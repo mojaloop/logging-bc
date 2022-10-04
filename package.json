@@ -17,6 +17,7 @@
     "prepare": "husky install",
     "start:logging-svc": "npm -w @mojaloop/logging-bc-logging-svc run start",
     "build": "npm -ws run build",
+    "docker:build": "npm run build && docker build . -t \"mojaloop/logging-bc-logging-svc\"",
     "watch": "npm -ws --parallel run watch",
     "clean": "rm -Rf dist && npm -ws --parallel run clean",
     "clean:npm": "rm -Rf node_modules && npm -ws --parallel run clean:npm",
@@ -37,7 +38,6 @@
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@types/node": "^16.11.9",
-    "@types/node-cache": "^4.2.5",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "@typescript-eslint/parser": "^5.36.1",
     "eslint": "^8.14.0",
