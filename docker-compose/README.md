@@ -66,14 +66,14 @@ sysctl -w vm.max_map_count=262144 # might require sudo
 docker-compose up -d
 ```
 
-**Note:** If you already have Kafka running on another docker container or elsewhere, comment out the section related to docker called `mjl-kafka-zookeeper` in the `docker-compose.yml` file. 
+**Note:** If you already have Kafka running on another docker container or elsewhere, comment out the section related to docker called `ml-kafka-zookeeper` in the `docker-compose.yml` file. 
 
 ## ElasticSearch Logging Mappings
 
 ### Once ElasticSearch has started you should upload the data mappings using the following command:
 
 ```shell
-curl -i --insecure -X PUT "https://localhost:9200/mjl-logging/"  \ 
+curl -i --insecure -X PUT "https://localhost:9200/ml-logging/"  \ 
   -u "elastic:PASSWORD_IN_ENV_FILE" \ 
   -H "Content-Type: application/json" \
   --data-binary "@es_mappings.json"

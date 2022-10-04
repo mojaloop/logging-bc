@@ -47,7 +47,7 @@ const BC_NAME = "logging-bc";
 const APP_NAME = "client-lib-integration-tests";
 const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
-const ES_LOGS_INDEX = "mjl-logging";
+const ES_LOGS_INDEX = "ml-logging";
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 const ELASTICSEARCH_URL = process.env["ELASTICSEARCH_URL"] || "https://localhost:9200";
 
@@ -119,7 +119,7 @@ describe("nodejs-rdkafka-log-bc", () => {
 
     const esClient = new Client(elasticOpts);
     const result = await esClient.search({
-      index: "mjl-logging",
+      index: "ml-logging",
       query: {
         match: {
           level: "debug"
