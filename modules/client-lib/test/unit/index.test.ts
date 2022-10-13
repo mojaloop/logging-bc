@@ -66,11 +66,13 @@ describe("default logger tests", () => {
   test("error object tests", async () => {
     const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
-    const err = new Error("Error object message");
+    const err1 = new Error("Error object message - style 1");
+    console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+    logger.error("An error occurred", err1);
 
-    console.log("\r\n*** Error logging output follows ***");
-
-    logger.error("An error occurred", err);
+    const err2 = new Error("Error object message - style 2");
+    console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
+    logger.error("An error occurred", err2);
 
     await expect(true);
   })

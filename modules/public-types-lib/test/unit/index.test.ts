@@ -1,21 +1,18 @@
 "use strict"
 
+import {ILogger, ConsoleLogger, LogLevel} from "../../src/";
 
-import {ConsoleLogger, LogLevel} from "../../src/";
+let logger: ILogger;
 
-describe('example test', () => {
+describe("ConsoleLogger tests", () => {
 
-  beforeEach(async () => {
-    // Setup
-  })
+  beforeAll(()=>{
+    logger = new ConsoleLogger();
+  });
 
-  afterEach(async () => {
-    // Cleanup
-  })
+  test("generic ConsoleLogger tests", async () => {
 
-  test('should goes here', async () => {
 
-    const logger = new ConsoleLogger();
     logger.setLogLevel(LogLevel.TRACE);
 
     logger.trace("trace message");
@@ -28,5 +25,17 @@ describe('example test', () => {
     logger.error("error message", new Error("TestErrorObject"));
 
     await expect(true)
+  })
+
+  test("error object tests", async () => {
+    const err1 = new Error("Error object message - style 1");
+    console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+    logger.error("An error occurred", err1);
+
+    const err2 = new Error("Error object message - style 2");
+    console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
+    logger.error("An error occurred", err2);
+
+    await expect(true);
   })
 })

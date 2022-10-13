@@ -38,9 +38,7 @@ import {
   MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
-
-import {IMessage} from "@mojaloop/platform-shared-lib-messaging-types-lib"
-import {ConsoleLogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
+import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {KafkaLogger} from "../../src/kafka_logger";
 
 //jest.setTimeout(30000); // change this to suit the test (ms)
@@ -61,6 +59,15 @@ const LOGLEVEL = LogLevel.TRACE;
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 
 const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "client-lib-integration-tests-logs-topic";
+
+function log(logger:ILogger, testObj:any){
+  logger.trace(`${logger.getLogLevel()} - hello world from trace`, testObj);
+  logger.debug(`${logger.getLogLevel()} - hello world from debug`, testObj);
+  logger.info(`${logger.getLogLevel()} - hello world from info`, testObj);
+  logger.warn(`${logger.getLogLevel()} - hello world from warn`, testObj);
+  logger.error(`${logger.getLogLevel()} - hello world from error`, testObj);
+  logger.fatal(`${logger.getLogLevel()} - hello world from fatal`, testObj);
+}
 
 describe("client-lib-integration-tests", () => {
 
@@ -113,5 +120,29 @@ describe("client-lib-integration-tests", () => {
     await new Promise(f => setTimeout(f, 1000));
 
     expect(receivedMessages).toBe(6);
+  });
+
+
+  test("error object tests", async () => {
+
+    const err1 = new Error("Error object message - style 1");
+    console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+    kafkaLogger.error("An error occurred", err1);
+
+    const err2 = new Error("Error object message - style 2");
+    console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
+    kafkaLogger.error("An error occurred", err2);
+
+    await expect(true);
+  })
+
+  test("child logger tests", async () => {
+    const childLogger = kafkaLogger.createChild("subcomponent");
+
+    console.log("\r\n*** Child logger output follows ***");
+
+    log(childLogger, {});
+
+    await expect(true);
   })
 })
