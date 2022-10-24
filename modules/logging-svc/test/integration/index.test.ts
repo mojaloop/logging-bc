@@ -101,7 +101,7 @@ describe("nodejs-rdkafka-log-bc", () => {
     const elasticOpts = { node: ELASTICSEARCH_URL,
       auth: {
         username: "elastic",
-        password: process.env.elasticsearch_password || "123@Edd!1234SS",
+        password: process.env.elasticsearch_password || "elasticSearchPas42",
       },
       tls: {
         ca: process.env.elasticsearch_certificate,
