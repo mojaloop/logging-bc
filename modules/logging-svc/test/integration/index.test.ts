@@ -64,7 +64,7 @@ let kafkaLogger : KafkaLogger;
 const defaultLogger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
 describe("nodejs-rdkafka-log-bc", () => {
-  jest.setTimeout(10000);
+  jest.setTimeout(1000);
 
   beforeAll(async () => {
     producerOptions = {
@@ -96,6 +96,7 @@ describe("nodejs-rdkafka-log-bc", () => {
   })
 
   test("produce and consume log-bc using kafka and elasticsearch", async () => {
+    jest.setTimeout(100000);
     // Startup Handler
     //Elastic
     const elasticOpts = { node: ELASTICSEARCH_URL,
@@ -114,15 +115,16 @@ describe("nodejs-rdkafka-log-bc", () => {
 
     await kafkaLogger.info("Logger message. Hello World! Info.");
     await kafkaLogger.debug("Logger message. Hello World! Debug.");
-    await kafkaLogger.warn("Logger message. Hello World! Warn.");
-    await new Promise(f => setTimeout(f, 2000));
+    await kafkaLogger.warn("Logger message. Hello World! Warn."); 
+     
+    await new Promise(f => setTimeout(f, 2000));  
 
     const esClient = new Client(elasticOpts);
     const result = await esClient.search({
       index: "ml-logging",
       query: {
         match: {
-          level: "debug"
+          level: "info"
         }
       }
     });

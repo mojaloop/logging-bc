@@ -81,7 +81,7 @@ async function start(){
             KAFKA_LOGS_TOPIC,
             LOGLEVEL
     );
-    await (logger as KafkaLogger).start();
+    await (logger as KafkaLogger).init();
 
     // use the same way as DefaultLogger
     logger.trace("trace message");

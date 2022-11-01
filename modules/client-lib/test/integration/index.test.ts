@@ -41,7 +41,7 @@ import {
 import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {KafkaLogger} from "../../src/kafka_logger";
 
-//jest.setTimeout(30000); // change this to suit the test (ms)
+// jest.setTimeout(30000); // change this to suit the test (ms)
 
 const logger: ConsoleLogger = new ConsoleLogger();
 
@@ -96,6 +96,7 @@ describe("client-lib-integration-tests", () => {
   })
 
   test("produce and consume logs using the KafkaLogger", async () => {
+    jest.setTimeout(10000)
     let receivedMessages = 0;
     async function handleLogMsg (message: IRawMessage): Promise<void> {
       receivedMessages++;

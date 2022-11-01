@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/modules/client-lib/test/integration/index.test.ts",
+            "program": "${workspaceFolder}/modules/logging-svc/test/integration/index.test.ts",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]

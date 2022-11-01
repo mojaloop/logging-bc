@@ -49,11 +49,16 @@ export class ElasticsearchLogStorage implements ILogStorageAdapter {
     }
 
     async init(): Promise<void> {
-        this._logger.info("ElasticsearchLogStorage initialised");
+        try{
+            this._logger.info("ElasticsearchLogStorage initialised");
 
-        // test the connection
-        const info = await this._client.info();
-        this._logger.info(`Connected to elasticsearch instance with name: ${info.name}, and cluster name: ${info.cluster_name}`);
+            // test the connection
+            const info = await this._client.info();
+            this._logger.info(`Connected to elasticsearch instance with name: ${info.name}, and cluster name: ${info.cluster_name}`);
+        }
+        catch (err) {
+            this._logger.error("Undefined", err);
+        }
     }
 
 
