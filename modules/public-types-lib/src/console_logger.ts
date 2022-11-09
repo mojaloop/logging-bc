@@ -36,7 +36,8 @@ export class ConsoleLogger implements ILogger {
     protected _logLevel: LogLevel = LogLevel.DEBUG; // default
 
     createChild(componentName:string):ILogger{
-        throw new Error("Not implemented in ConsoleLogger");
+        // nop - not implemented here, just return the same instance
+        return this;
     }
 
     setLogLevel (logLevel: LogLevel): void{
