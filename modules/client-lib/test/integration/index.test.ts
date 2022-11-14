@@ -41,7 +41,7 @@ import {
 import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {KafkaLogger} from "../../src/kafka_logger";
 
-// jest.setTimeout(30000); // change this to suit the test (ms)
+jest.setTimeout(30000); // change this to suit the test (ms)
 
 const logger: ConsoleLogger = new ConsoleLogger();
 
@@ -96,7 +96,7 @@ describe("client-lib-integration-tests", () => {
   })
 
   test("produce and consume logs using the KafkaLogger", async () => {
-    jest.setTimeout(10000)
+    jest.setTimeout(1000)
     let receivedMessages = 0;
     async function handleLogMsg (message: IRawMessage): Promise<void> {
       receivedMessages++;
@@ -118,9 +118,10 @@ describe("client-lib-integration-tests", () => {
     await kafkaLogger.fatal("Logger message. Hello World! Lets fatal.");
 
     // Wait 1 second to receive the event
-    await new Promise(f => setTimeout(f, 1000));
-
+    await new Promise(f => setTimeout(f, 10000));
+    
     expect(receivedMessages).toBe(6);
+    
   });
 
 
@@ -138,6 +139,7 @@ describe("client-lib-integration-tests", () => {
   })
 
   test("child logger tests", async () => {
+    
     const childLogger = kafkaLogger.createChild("subcomponent");
 
     console.log("\r\n*** Child logger output follows ***");
