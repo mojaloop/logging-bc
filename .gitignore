@@ -118,3 +118,5 @@ devspace*
 
 docker-compose/exec/*
 /.idea/
+
+.vscode
