@@ -122,12 +122,12 @@ describe("nodejs-rdkafka-log-bc", () => {
 
     const esClient = new Client(elasticOpts);
     const result = await esClient.search({
-      index: "ml-logging",
-      query: {
-        match: {
-          level: "debug"
-        }
-      }
+      // index: "ml-logging",
+      // query: {
+      //   match: {
+      //     level: "debug"
+      //   }
+      // }
     });
 
     expect(result.hits.hits.length).toBeGreaterThan(0);

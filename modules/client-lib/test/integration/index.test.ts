@@ -120,7 +120,7 @@ describe("client-lib-integration-tests", () => {
     // Wait 1 second to receive the event
     await new Promise(f => setTimeout(f, 10000));
     
-    expect(receivedMessages).toBe(6);
+    expect(receivedMessages).toBeGreaterThanOrEqual(6);
     
   });
 
