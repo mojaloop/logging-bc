@@ -15,7 +15,7 @@
 #### Run
 
 ```bash
-yarn start:logging-svc
+npm run start:logging-svc
 ```
 
 ## Usage
