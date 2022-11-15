@@ -96,9 +96,9 @@ describe("nodejs-rdkafka-log-bc", () => {
   })
 
   test("produce and consume log-bc using kafka and elasticsearch", async () => {
-    // jest.setTimeout(1000);
+    // jest.setTimeout(10000);
     // Startup Handler
-    //Elastic
+    //Elastic 
     const elasticOpts = { node: ELASTICSEARCH_URL,
       auth: {
         username: "elastic",
@@ -111,24 +111,25 @@ describe("nodejs-rdkafka-log-bc", () => {
     };
     elasticStorage = new ElasticsearchLogStorage(elasticOpts, ES_LOGS_INDEX, defaultLogger);
     logEvtHandlerForES = new LogEventHandler(defaultLogger, elasticStorage, KAFKA_URL, `${BC_NAME}_${APP_NAME}`, KAFKA_LOGS_TOPIC);
+    
     await logEvtHandlerForES.init();
 
-    await new Promise(f => setTimeout(f, 100));
+    await new Promise(f => setTimeout(f, 1000));
 
     await kafkaLogger.info("Logger message. Hello World! Info.");
     await kafkaLogger.debug("Logger message. Hello World! Debug.");
     await kafkaLogger.warn("Logger message. Hello World! Warn."); 
-    await new Promise(f => setTimeout(f, 2000));  
+    await new Promise(f => setTimeout(f, 1000));  
 
     const esClient = new Client(elasticOpts);
     const result = await esClient.search({
-      // index: "ml-logging",
-      // query: {
-      //   match: {
-      //     level: "debug"
-      //   }
-      // }
-    });
+      index: "ml-logging",
+      query: {
+        match: {
+          level: "debug"
+        }
+      }
+    })
 
     expect(result.hits.hits.length).toBeGreaterThan(0);
 
