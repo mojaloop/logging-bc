@@ -117,7 +117,7 @@ describe("client-lib-integration-tests", () => {
     await kafkaLogger.error("Logger message. Hello World! Lets error.");
     await kafkaLogger.fatal("Logger message. Hello World! Lets fatal.");
 
-    // Wait 1 second to receive the event
+    // Wait 10 second to receive the event
     await new Promise(f => setTimeout(f, 10000));
     
     expect(receivedMessages).toBeGreaterThanOrEqual(6);
