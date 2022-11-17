@@ -125,18 +125,18 @@ describe("client-lib-integration-tests", () => {
   });
 
 
-  // test("error object tests", async () => {
+  test("error object tests", async () => {
 
-  //   const err1 = new Error("Error object message - style 1");
-  //   console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
-  //   kafkaLogger.error("An error occurred", err1);
+    const err1 = new Error("Error object message - style 1");
+    console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+    kafkaLogger.error("An error occurred", err1);
 
-  //   const err2 = new Error("Error object message - style 2");
-  //   console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
-  //   kafkaLogger.error("An error occurred", err2);
+    const err2 = new Error("Error object message - style 2");
+    console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
+    kafkaLogger.error("An error occurred", err2);
 
-  //   await expect(true);
-  // })
+    await expect(true);
+  })
 
   test("child logger tests", async () => {
     
