@@ -126,6 +126,26 @@ Use the credentials set in the .env file.
 
 ---
 
+# Setup ElasticSearch Mappings
+
+Once ElasticSearch has started you should upload the data mappings for the logs and audits indexes using the following commands.
+
+This must be executed once after setting up a new ElasticSearch instance, or when the indexes are updated.
+
+Execute this in the directory containing the files `es_mappings_logging.json` and `es_mappings_auditing.json`.
+
+**When asked, enter the password for the `elastic` user in the `.env` file.**
+
+```shell
+# Create the logging index 
+curl -i --insecure -X PUT "https://localhost:9200/ml-logging/" -u "elastic" -H "Content-Type: application/json" --data-binary "@es_mappings_logging.json"
+```
+```shell
+# Create the auditing index
+curl -i --insecure -X PUT "https://localhost:9200/ml-auditing/" -u "elastic" -H "Content-Type: application/json" --data-binary "@es_mappings_auditing.json"
+```
+
+
 ## After running the docker-compose-infra we can start logging-bc:
 ```shell
 npm run start:logging-svc

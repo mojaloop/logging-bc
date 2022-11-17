@@ -96,7 +96,7 @@ describe("client-lib-integration-tests", () => {
   })
 
   test("produce and consume logs using the KafkaLogger", async () => {
-    jest.setTimeout(10000)
+    jest.setTimeout(1000)
     let receivedMessages = 0;
     async function handleLogMsg (message: IRawMessage): Promise<void> {
       receivedMessages++;
