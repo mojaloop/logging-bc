@@ -96,7 +96,7 @@ describe("client-lib-integration-tests", () => {
   })
 
   test("produce and consume logs using the KafkaLogger", async () => {
-    jest.setTimeout(1000)
+    jest.setTimeout(10000)
     let receivedMessages = 0;
     async function handleLogMsg (message: IRawMessage): Promise<void> {
       receivedMessages++;
@@ -108,7 +108,7 @@ describe("client-lib-integration-tests", () => {
     kafkaConsumer.setTopics([KAFKA_LOGS_TOPIC]);
     await kafkaConsumer.connect();
     await kafkaConsumer.start();
-    await new Promise(f => setTimeout(f, 100));
+    await new Promise(f => setTimeout(f, 2000));
 
     await kafkaLogger.trace("Logger message. Hello World! Lets trace.");
     await kafkaLogger.debug("Logger message. Hello World! Lets debug.");
@@ -118,25 +118,25 @@ describe("client-lib-integration-tests", () => {
     await kafkaLogger.fatal("Logger message. Hello World! Lets fatal.");
 
     // Wait 10 second to receive the event
-    await new Promise(f => setTimeout(f, 10000));
+    await new Promise(f => setTimeout(f, 5000));
     
     expect(receivedMessages).toBeGreaterThanOrEqual(6);
     
   });
 
 
-  test("error object tests", async () => {
+  // test("error object tests", async () => {
 
-    const err1 = new Error("Error object message - style 1");
-    console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
-    kafkaLogger.error("An error occurred", err1);
+  //   const err1 = new Error("Error object message - style 1");
+  //   console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+  //   kafkaLogger.error("An error occurred", err1);
 
-    const err2 = new Error("Error object message - style 2");
-    console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
-    kafkaLogger.error("An error occurred", err2);
+  //   const err2 = new Error("Error object message - style 2");
+  //   console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
+  //   kafkaLogger.error("An error occurred", err2);
 
-    await expect(true);
-  })
+  //   await expect(true);
+  // })
 
   test("child logger tests", async () => {
     

@@ -119,7 +119,7 @@ describe("nodejs-rdkafka-log-bc", () => {
     await kafkaLogger.info("Logger message. Hello World! Info.");
     await kafkaLogger.debug("Logger message. Hello World! Debug.");
     await kafkaLogger.warn("Logger message. Hello World! Warn."); 
-    await new Promise(f => setTimeout(f, 1000));  
+    await new Promise(f => setTimeout(f, 3000));  
 
     const esClient = new Client(elasticOpts);
     const result = await esClient.search({
