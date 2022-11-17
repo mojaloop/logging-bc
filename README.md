@@ -53,7 +53,7 @@ npm run test:unit
 
 Use https://github.com/mojaloop/platform-shared-tools/tree/main/packages/deployment/docker-compose-infra
 
-Follow instructions in the docker-compose-infra README.md to run the supporting services.  
+Follow instructions in the docker-compose-infra `README.md` to run the supporting services.  
 
 
 ## After running the docker-compose-infra we can start logging-bc:
