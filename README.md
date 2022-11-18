@@ -15,7 +15,7 @@
 #### Run
 
 ```bash
-yarn start:logging-svc
+npm run start:logging-svc
 ```
 
 ## Usage
@@ -29,33 +29,48 @@ nvm install
 nvm use
 ```
 
-### Install Yarn
-
-```bash
-npm -g yarn
-```
-
 ### Install Dependencies
 
 ```bash
-yarn
+npm install
 ```
 
 ## Build
 
 ```bash
-yarn build
-```
-
-## Run
-
-```bash
-yarn start
+npm run build
 ```
 
 ## Unit Tests
 
 ```bash
-yarn test:unit
+npm run test:unit
 ```
+
+## Run the services 
+
+### Startup supporting services
+
+Use https://github.com/mojaloop/platform-shared-tools/tree/main/packages/deployment/docker-compose-infra
+
+Follow instructions in the docker-compose-infra `README.md` to run the supporting services.  
+
+
+## After running the docker-compose-infra we can start logging-bc:
+```shell
+npm run start:logging-svc
+```
+
+## Integration Tests
+```bash
+npm run test:integration
+```
+
+## Troubleshoot 
+
+### Unable to load dlfcn_load
+```bash
+error:25066067:DSO support routines:dlfcn_load:could not load the shared library
+```
+Fix: https://github.com/mojaloop/security-bc.git  `export OPENSSL_CONF=/dev/null`
 

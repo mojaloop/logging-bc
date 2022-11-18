@@ -52,5 +52,8 @@
     "modules/client-lib",
     "modules/logging-svc",
     "modules/*"
-  ]
+  ],
+  "dependencies": {
+    "@mojaloop/logging-bc-client-lib": "file:modules/client-lib"
+  }
 }
