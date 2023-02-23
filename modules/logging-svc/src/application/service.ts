@@ -92,7 +92,7 @@ export class Service {
             this.logger.error("logHandler init error", err);
         });
 
-        this.logger.info("logHandler initialised");
+        this.logger.info(`Logging Handler service v: ${APP_VERSION} initialised`);
     }
 
     static async stop(force = false): Promise<void> {
