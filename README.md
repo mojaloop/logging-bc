@@ -10,7 +10,7 @@
 
 {{DESCRIPTION}}
 
-[README](./modules/logging-svc/README.md)
+[README](packages/logging-svc/README.md)
 
 #### Run
 
@@ -47,13 +47,13 @@ npm run build
 npm run test:unit
 ```
 
-## Run the services 
+## Run the services
 
 ### Startup supporting services
 
 Use https://github.com/mojaloop/platform-shared-tools/tree/main/packages/deployment/docker-compose-infra
 
-Follow instructions in the docker-compose-infra `README.md` to run the supporting services.  
+Follow instructions in the docker-compose-infra `README.md` to run the supporting services.
 
 
 ## After running the docker-compose-infra we can start logging-bc:
@@ -66,7 +66,7 @@ npm run start:logging-svc
 npm run test:integration
 ```
 
-## Troubleshoot 
+## Troubleshoot
 
 ### Unable to load dlfcn_load
 ```bash

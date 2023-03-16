@@ -39,7 +39,7 @@ import {
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
 import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
-import {KafkaLogger} from "../../src/kafka_logger";
+import {KafkaLogger} from "@mojaloop/logging-bc-client-lib";
 
 jest.setTimeout(30000); // change this to suit the test (ms)
 
@@ -119,9 +119,9 @@ describe("client-lib-integration-tests", () => {
 
     // Wait 10 second to receive the event
     await new Promise(f => setTimeout(f, 5000));
-    
+
     expect(receivedMessages).toBeGreaterThanOrEqual(6);
-    
+
   });
 
 
@@ -139,7 +139,7 @@ describe("client-lib-integration-tests", () => {
   })
 
   test("child logger tests", async () => {
-    
+
     const childLogger = kafkaLogger.createChild("subcomponent");
 
     console.log("\r\n*** Child logger output follows ***");

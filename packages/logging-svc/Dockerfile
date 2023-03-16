@@ -1,10 +1,10 @@
-########################################
-FROM node:18.13-alpine as builder
+FROM node:18.13.0-alpine AS builder
 
 # Create the project directory inside the container.
 WORKDIR /app
 
-RUN apk add --no-cache -t build-dependencies git make gcc g++ python3 libtool autoconf pkgconfig automake bash # wget tar xz
+RUN apk add --no-cache -t build-dependencies git make gcc g++ python3 \
+    libtool autoconf pkgconfig automake librdkafka-dev bash # wget tar xz
 
 RUN cd $(npm root -g)/npm
 RUN npm config set unsafe-perm true
@@ -13,15 +13,19 @@ RUN npm install -g node-gyp
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-COPY modules/public-types-lib/package.json ./modules/public-types-lib/
-COPY modules/client-lib/package.json ./modules/client-lib/
-COPY modules/logging-svc/package.json ./modules/logging-svc/
+COPY packages/public-types-lib/package.json ./packages/public-types-lib/
+COPY packages/client-lib/package.json ./packages/client-lib/
+COPY packages/logging-svc/package.json ./packages/logging-svc/
 
 #RUN ls -la
 
 # If you are building your code for production
 #RUN npm ci --only=production
-RUN npm install
+RUN BUILD_LIBRDKAFKA=0 npm install
+
+# Note on BUILD_LIBRDKAFKA:
+#   Use BUILD_LIBRDKAFKA=0 only if we have installed librdkafka-dev in
+#   the builder image and librdkafka in the final image
 
 ########################################
 # Copy code and build
@@ -30,11 +34,11 @@ RUN npm install
 COPY tsconfig.json ./
 
 # copy required supporting modules/packages (only the private ones not published to npm)
-COPY modules/client-lib ./modules/client-lib
-COPY modules/public-types-lib ./modules/public-types-lib
+COPY packages/client-lib ./packages/client-lib
+COPY packages/public-types-lib ./packages/public-types-lib
 
 # copy service code
-COPY modules/logging-svc ./modules/logging-svc
+COPY packages/logging-svc ./packages/logging-svc
 
 # build
 RUN npm run build
@@ -43,9 +47,10 @@ RUN npm run build
 FROM node:18.13-alpine
 WORKDIR /app
 
+RUN apk add librdkafka
+
 COPY --from=builder /app .
 
 # kafka handler, no http server yet
-EXPOSE 3100
 
 CMD [ "npm", "run", "start:logging-svc" ]
