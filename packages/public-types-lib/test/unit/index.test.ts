@@ -16,8 +16,10 @@ describe("ConsoleLogger tests", () => {
 	test("ConsoleLogger tests - createChild", async () => {
 		const logger = new ConsoleLogger();
 		logger.setLogLevel(LogLevel.FATAL);
-		const child = logger.createChild("test child");
-		expect(child).toBeDefined();
+
+        const child = logger.createChild("test child");
+
+        expect(child).toBeDefined();
 		expect(child.getLogLevel()).toEqual(LogLevel.FATAL);
 	});
 
@@ -43,8 +45,8 @@ describe("ConsoleLogger tests", () => {
 		logger.error("An error occurred", err1);
 
 		const err2 = new Error("Error object message - style 2");
-		console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
-		logger.error("An error occurred", err2);
+		console.log("\r\n*** Error logging output for style 2: logger.error(err, msg) follows ***");
+		logger.error(err2, "An error occurred" );
 
 		await expect(true);
 	})

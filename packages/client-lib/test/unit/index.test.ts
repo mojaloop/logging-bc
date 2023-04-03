@@ -28,6 +28,10 @@ describe("default logger tests", () => {
 		// Cleanup
 	})
 
+    test("constructor tests", async () => {
+        const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LogLevel.ERROR);
+    });
+
 	test("loglevel tests", async () => {
 		const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 

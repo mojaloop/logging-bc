@@ -30,18 +30,19 @@
 
 "use strict"
 
+import {Service} from "@mojaloop/logging-bc-logging-svc/dist/application/service";
 import {LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib"
 import {
-  MLKafkaRawConsumer,
-  MLKafkaRawConsumerOptions,
-  MLKafkaRawConsumerOutputType,
-  MLKafkaRawProducerOptions
+    MLKafkaRawConsumer,
+    MLKafkaRawConsumerOptions,
+    MLKafkaRawConsumerOutputType,
+    MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib"
 
-import {DefaultLogger, KafkaLogger } from "@mojaloop/logging-bc-client-lib";
+import {DefaultLogger, KafkaLogger} from "@mojaloop/logging-bc-client-lib";
 import {ElasticsearchLogStorage} from "../../packages/logging-svc/src/infrastructure/es_log_storage";
 import {LogEventHandler} from "../../packages/logging-svc/src/application/log_event_handler";
-import { Client } from "@elastic/elasticsearch";
+import {Client} from "@elastic/elasticsearch";
 
 const BC_NAME = "logging-bc";
 const APP_NAME = "client-lib-integration-tests";
@@ -55,85 +56,82 @@ const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "logging-svc-integra
 
 let producerOptions: MLKafkaRawProducerOptions;
 
-let kafkaConsumer: MLKafkaRawConsumer;
+
 let consumerOptions: MLKafkaRawConsumerOptions;
 
-let elasticStorage:ElasticsearchLogStorage;
-let logEvtHandlerForES:LogEventHandler;
-let kafkaLogger : KafkaLogger;
+let elasticStorage: ElasticsearchLogStorage;
+
 const defaultLogger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
-describe("nodejs-rdkafka-log-bc", () => {
-  jest.setTimeout(10000);
-
-  beforeAll(async () => {
-    producerOptions = {
-      kafkaBrokerList: KAFKA_URL,
+const elasticOpts = {
+    node: ELASTICSEARCH_URL,
+    auth: {
+        username: "elastic",
+        password: process.env.elasticsearch_password || "elasticSearchPas42",
+    },
+    tls: {
+        ca: process.env.elasticsearch_certificate,
+        rejectUnauthorized: false,
     }
+};
 
-    kafkaLogger = new KafkaLogger(
+describe("nodejs-rdkafka-log-bc", () => {
+    jest.setTimeout(10000);
+
+    beforeAll(async () => {
+        producerOptions = {
+            kafkaBrokerList: KAFKA_URL,
+        }
+
+
+
+        // Command Handler
+        consumerOptions = {
+            kafkaBrokerList: KAFKA_URL,
+            kafkaGroupId: "test_consumer_group",
+            outputType: MLKafkaRawConsumerOutputType.Json
+        };
+
+        elasticStorage = new ElasticsearchLogStorage(elasticOpts, ES_LOGS_INDEX, defaultLogger);
+
+        await Service.start();
+        console.log("Service start complete");
+    })
+
+    afterAll(async () => {
+        // Cleanup
+        await new Promise(f => setTimeout(f, 2000));
+        await Service.stop();
+    });
+
+    test("produce and consume log-bc using kafka and elasticsearch", async () => {
+        const kafkaLogger = new KafkaLogger(
             BC_NAME,
             APP_NAME,
             APP_VERSION,
             producerOptions,
             KAFKA_LOGS_TOPIC,
             LOGLEVEL
-    );
-    await kafkaLogger.init();
+        );
+        await kafkaLogger.init();
+        // await kafkaLogger.info("Logger message. Hello World! Info.");
+        await kafkaLogger.debug("Logger message. Hello World! Debug.");
+        // await kafkaLogger.warn("Logger message. Hello World! Warn.");
+        await new Promise(f => setTimeout(f, 4000));
 
-    // Command Handler
-    consumerOptions = {
-      kafkaBrokerList: KAFKA_URL,
-      kafkaGroupId: "test_consumer_group",
-      outputType: MLKafkaRawConsumerOutputType.Json
-    };
-  })
+        const esClient = new Client(elasticOpts);
+        const result = await esClient.search({
+            index: "ml-logging",
+            query: {
+                match: {
+                    level: "debug"
+                }
+            }
+        })
 
-  afterAll(async () => {
-    // Cleanup
-    await kafkaLogger.destroy()
-    logEvtHandlerForES.destroy();
-  })
+        expect(result.hits.hits.length).toBeGreaterThan(0);
 
-  test("produce and consume log-bc using kafka and elasticsearch", async () => {
-    // jest.setTimeout(10000);
-    // Startup Handler
-    //Elastic
-    const elasticOpts = { node: ELASTICSEARCH_URL,
-      auth: {
-        username: "elastic",
-        password: process.env.elasticsearch_password || "elasticSearchPas42",
-      },
-      tls: {
-        ca: process.env.elasticsearch_certificate,
-        rejectUnauthorized: false,
-      }
-    };
-    elasticStorage = new ElasticsearchLogStorage(elasticOpts, ES_LOGS_INDEX, defaultLogger);
-    logEvtHandlerForES = new LogEventHandler(defaultLogger, elasticStorage, KAFKA_URL, `${BC_NAME}_${APP_NAME}`, KAFKA_LOGS_TOPIC);
-
-    await logEvtHandlerForES.init();
-
-    await new Promise(f => setTimeout(f, 1000));
-
-    await kafkaLogger.info("Logger message. Hello World! Info.");
-    await kafkaLogger.debug("Logger message. Hello World! Debug.");
-    await kafkaLogger.warn("Logger message. Hello World! Warn.");
-    await new Promise(f => setTimeout(f, 4000));
-
-    const esClient = new Client(elasticOpts);
-    const result = await esClient.search({
-      index: "ml-logging",
-      query: {
-        match: {
-          level: "debug"
-        }
-      }
+        await esClient.close();
+        await kafkaLogger.destroy();
     })
-
-    expect(result.hits.hits.length).toBeGreaterThan(0);
-
-    await esClient.close();
-    await logEvtHandlerForES.destroy();
-  })
 })

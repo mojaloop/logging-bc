@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 /*****
  License
  --------------
@@ -20,6 +19,9 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
 
+ * Gates Foundation
+ - Name Surname <name.surname@gatesfoundation.com>
+
  * Crosslake
  - Pedro Sousa Barreto <pedrob@crosslaketech.com>
 
@@ -27,11 +29,42 @@
  ******/
 
 "use strict";
-import {Service} from "./service";
 
-Service.start().then(() => {
-    console.log("Service start complete");
-});
+import {IRawMessage, IRawMessageConsumer} from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
+
+export class KafkaConsumerMock implements IRawMessageConsumer{
+    private _handler: (message: IRawMessage)=>void;
+
+    connect(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    destroy(force: boolean): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    disconnect(force: boolean): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    setCallbackFn(handlerCallback: (message: IRawMessage) => Promise<void>): void {
+        this._handler = handlerCallback;
+    }
+
+    setTopics(topics: string[]): void {
+
+    }
+
+    start(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    stop(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
 
 
-// your code -> clientLib.log() -> kafka topic ----[topic: logs]----- logEventHandler kafka consumer -> ILogStorageAdapter
+    injectMessage(message: IRawMessage){
+        this._handler(message);
+    }
+}

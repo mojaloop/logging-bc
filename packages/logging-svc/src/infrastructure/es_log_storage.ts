@@ -31,7 +31,7 @@
 "use strict";
 
 import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
-import {ILogStorageAdapter} from "../application/log_event_handler";
+import {ILogStorageAdapter} from "../application/interfaces";
 import {Client} from "@elastic/elasticsearch";
 import {ClientOptions} from "@elastic/elasticsearch/lib/client";
 

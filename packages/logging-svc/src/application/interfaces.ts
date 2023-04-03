@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 /*****
  License
  --------------
@@ -20,6 +19,9 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
 
+ * Gates Foundation
+ - Name Surname <name.surname@gatesfoundation.com>
+
  * Crosslake
  - Pedro Sousa Barreto <pedrob@crosslaketech.com>
 
@@ -27,11 +29,14 @@
  ******/
 
 "use strict";
-import {Service} from "./service";
 
-Service.start().then(() => {
-    console.log("Service start complete");
-});
+//Since the engine/processor will not be dynamic.
+import {LogEntry} from "@mojaloop/logging-bc-public-types-lib";
 
+export interface ILogStorageAdapter {
+    store(entries: LogEntry[]): Promise<void>;
 
-// your code -> clientLib.log() -> kafka topic ----[topic: logs]----- logEventHandler kafka consumer -> ILogStorageAdapter
+    init(): Promise<void>;
+
+    destroy(): Promise<void>;
+}

@@ -26,10 +26,13 @@
  ******/
 
 "use strict";
-import {ILogStorageAdapter, LogEventHandler} from "./log_event_handler";
+import process from "process";
+import {LogEventHandler} from "./log_event_handler";
+import {ILogStorageAdapter} from "./interfaces";
 import {ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {ElasticsearchLogStorage} from "../infrastructure/es_log_storage";
 import {DefaultLogger} from "@mojaloop/logging-bc-client-lib";
+import {IRawMessageConsumer, MLKafkaJsonConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
 const BC_NAME = "logging-bc";
 const APP_NAME = "logging-svc";
@@ -37,7 +40,7 @@ const APP_VERSION = process.env.npm_package_version || "0.0.1";
 const PRODUCTION_MODE = process.env["PRODUCTION_MODE"] || false;
 const LOG_LEVEL:LogLevel = process.env["LOG_LEVEL"] as LogLevel || LogLevel.DEBUG;
 
-const KAFKA_LOGS_TOPIC = "logs";
+const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "logs";
 
 const ELASTICSEARCH_URL = process.env["ELASTICSEARCH_URL"] || "https://localhost:9200";
 const ELASTICSEARCH_LOGS_INDEX =  process.env["ELASTICSEARCH_LOGS_INDEX"] || "ml-logging";
@@ -46,18 +49,20 @@ const ELASTICSEARCH_PASSWORD =  process.env["ELASTICSEARCH_PASSWORD"] ||  "elast
 
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 
-
 let globalLogger: ILogger;
 
 export class Service {
     static logger: ILogger;
     static logStorageAdapter: ILogStorageAdapter;
     static logHandler: LogEventHandler;
+    static consumer: IRawMessageConsumer;
 
     static async start(
         logger?: ILogger,
-        logStorageAdapter?:ILogStorageAdapter
+        logStorageAdapter?:ILogStorageAdapter,
+        kafkaConsumer?: IRawMessageConsumer
     ): Promise<void>{
+        /* istanbul ignore if */
         if (!logger) {
             logger = new DefaultLogger(
                     BC_NAME,
@@ -68,7 +73,7 @@ export class Service {
         }
         globalLogger = this.logger = logger;
 
-
+        /* istanbul ignore if */
         if(!logStorageAdapter){
             const elasticOpts = {
                 node: ELASTICSEARCH_URL,
@@ -85,19 +90,38 @@ export class Service {
         }
         this.logStorageAdapter = logStorageAdapter;
 
+        // create the handler
+        this.logHandler = new LogEventHandler(logger, this.logStorageAdapter);
 
-        this.logHandler = new LogEventHandler(logger, this.logStorageAdapter, KAFKA_URL, `${BC_NAME}_${APP_NAME}`, KAFKA_LOGS_TOPIC);
+        /* istanbul ignore if */
+        if(!kafkaConsumer){
+            const kafkaConsumerOptions: MLKafkaRawConsumerOptions = {
+                kafkaBrokerList: KAFKA_URL,
+                kafkaGroupId: `${BC_NAME}_${APP_NAME}`,
+            };
+            kafkaConsumer = new MLKafkaRawConsumer(kafkaConsumerOptions, this.logger);
+            kafkaConsumer.setTopics([KAFKA_LOGS_TOPIC]);
+        }
+        this.consumer = kafkaConsumer;
 
         await this.logHandler.init().catch((err) => {
             this.logger.error("logHandler init error", err);
         });
 
+        // hook logHandler process fn to the consumer handler
+        this.consumer.setCallbackFn(this.logHandler.processLogMessage.bind(this.logHandler));
+
+        await kafkaConsumer.connect();
+        await kafkaConsumer.start();
+
         this.logger.info(`Logging Handler service v: ${APP_VERSION} initialised`);
     }
 
     static async stop(force = false): Promise<void> {
+        if (this.consumer) await this.consumer.stop();
         if (this.logHandler)  await this.logHandler.destroy();
         if (this.logStorageAdapter) await this.logStorageAdapter.destroy();
+        if (this.consumer) await this.consumer.destroy(true);
     }
 }
 
