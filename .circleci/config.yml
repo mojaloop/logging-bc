@@ -108,7 +108,7 @@ jobs:
           <<: *defaults_configure_git
       - run:
           name: Add github.com to known hosts
-          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+          command: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           <<: *defaults_npm_auth
       - run: npm config set registry https://registry.npmjs.org/
@@ -129,7 +129,7 @@ jobs:
           <<: *defaults_configure_git
       - run:
           name: Add github.com to known hosts
-          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+          command: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: Detect changes and publish docker images
           command: chmod +x .circleci/*.sh && .circleci/publish_docker.sh
