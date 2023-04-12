@@ -13,6 +13,9 @@
     "Pedro Sousa Barreto <pedrosousabarreto@gmail.com>"
   ],
   "private": true,
+  "mojaloop": {
+    "publish_to_dockerhub": true
+  },
   "main": "./dist/application/index.js",
   "files": [
     "/dist"
