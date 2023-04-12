@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/logging-bc-client-lib",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "description": "Mojaloop logging bounded context client lib",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/logging-bc/tree/main/packages/client-lib",
