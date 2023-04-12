@@ -7,7 +7,6 @@
 
 Mojaloop Logging Service
 
-
 ## Starting the Logging Service
 
 Prerequisites:
