@@ -8,7 +8,6 @@
 
 Mojaloop Logging Service's Types Lib (and minimal console logger)
 
-
 This library provides stable logging related types to be used in code that does not require actual implementations of a logger, i.e., code that can use the ILogger interface and expect a concrete implementation to be injected by calling components.
 
 It also provides a minimal ILogger implementation for tests/development purposes only.
@@ -17,7 +16,7 @@ Types:
 - **LogLevel** - This enumeration lists the official log levels for the platform;
 - **ILogger** - This is the interface that all Logger implementations must implement, it specifies the mandatory level of functionaly between all implementations;
 - **LogEntry** - This type defines a server side log entry object. Only for advanced usage.
-- **ConsoleLogger** - This is the simplest possible ILogger implementation, that logs to the nodejs/js console. 
+- **ConsoleLogger** - This is the simplest possible ILogger implementation, that logs to the nodejs/js console.
 
 ## How to use in components without depending on concrete logger implementations
 
@@ -34,10 +33,10 @@ class MyDomainThing {
     constructor(logger: ILogger) {
         this._logger = logger;
     }
-    
+
     doAction():void{
         //... do stuff
-        
+
         this._logger.log("Did stuff");
     }
 }
@@ -92,7 +91,7 @@ To install this library use:
 ```shell
 yarn add @mojaloop/logging-bc-client-lib
 
-OR 
+OR
 
 npm install @mojaloop/logging-bc-client-lib
 ```

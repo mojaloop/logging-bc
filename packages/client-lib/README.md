@@ -6,12 +6,11 @@
 [![NPM Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/@mojaloop/logging-bc-client-lib.svg?style=flat)](https://www.npmjs.com/package/@mojaloop/logging-bc-client-lib)
 [![CircleCI](https://circleci.com/gh/mojaloop/logging-bc.svg?style=svg)](https://circleci.com/gh/mojaloop/logging-bc)
 
-
 This library provides usable implementations of the ILogger interface defined in `@mojaloop/logging-bc-public-types-lib`.
 
 Current implementations:
 - **DefaultLogger** - Does structured colored logging to the console as well as to a combined.log file;
-- **KafkaLogger** - Does everything DefaultLogger does and also sends the logs via Kafka to the central logging services.  
+- **KafkaLogger** - Does everything DefaultLogger does and also sends the logs via Kafka to the central logging services.
 
 
 ## Do not depend on specific client logging implementations when not needed
@@ -24,7 +23,7 @@ Only application layer code should depended on `@mojaloop/logging-bc-client-lib`
 
 This way, domain code only depends on the stable `@mojaloop/logging-bc-public-types-lib` and any concrete implementations as passed via dependency injection.
 
-For very simple logging needs the `@mojaloop/logging-bc-public-types-lib` library has a `ConsoleLogger` class that can be used. 
+For very simple logging needs the `@mojaloop/logging-bc-public-types-lib` library has a `ConsoleLogger` class that can be used.
 
 
 ## Usage
@@ -101,9 +100,9 @@ async function start(){
     await (logger as KafkaLogger).init();
 
     // use the same way as any other ILogger
-    // ex: 
+    // ex:
     logger.debug("debug message");
-    
+
 
     setTimeout(async ()=>{
         // NOTE Make sure to call KafkaLogger.destroy
@@ -125,7 +124,7 @@ To install this library use:
 ```shell
 yarn add @mojaloop/logging-bc-client-lib
 
-OR 
+OR
 
 npm install @mojaloop/logging-bc-client-lib
 ```

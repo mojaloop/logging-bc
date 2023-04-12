@@ -99,28 +99,7 @@ jobs:
       - store_artifacts:
           path: coverage
 
-  publish_npm:
-    executor: default-docker
-    steps:
-      - attach_workspace:
-          at: *workingDirVar
-      - run:
-          <<: *defaults_configure_git
-      - run:
-          name: Add github.com to known hosts
-          command: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-      - run:
-          <<: *defaults_npm_auth
-      - run: npm config set registry https://registry.npmjs.org/
-      - run:
-          name: Detect changes and publish NPM modules
-          command: chmod +x .circleci/*.sh && .circleci/publish_npm.sh
-      # store workspace for the publish_docker step
-      - persist_to_workspace:
-          root: *workingDirVar
-          paths:
-            - .
-  publish_docker:
+  publish:
     executor: default-machine
     steps:
       - attach_workspace:
@@ -131,8 +110,8 @@ jobs:
           name: Add github.com to known hosts
           command: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
-          name: Detect changes and publish docker images
-          command: chmod +x .circleci/*.sh && .circleci/publish_docker.sh
+          name: Detect changes, publishing npm and publish docker images
+          command: chmod +x .circleci/*.sh && .circleci/publish.sh
 
 workflows:
   version: 2
@@ -157,17 +136,10 @@ workflows:
           context: org-global
           requires:
             - test-unit
-      - publish_npm:
+      - publish:
           context: org-global
           filters:
             branches:
               only: main
           requires:
             - test-unit
-      - publish_docker:
-          context: org-global
-          filters:
-            branches:
-              only: main
-          requires:
-            - publish_npm
