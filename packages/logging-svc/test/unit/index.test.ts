@@ -13,18 +13,18 @@ let kafkaConsumer: KafkaConsumerMock;
 describe("Main logging-svc tests", () => {
 
     beforeAll(async () => {
-        logger = new DefaultLogger(
-            "logging-bc",
-            "logging-svc",
-            "0.0.0",
-            LogLevel.DEBUG
-        );
+        // logger = new DefaultLogger(
+        //     "logging-bc",
+        //     "logging-svc",
+        //     "0.0.0",
+        //     LogLevel.DEBUG
+        // );
 
         mockStorage = new StorageMock();
         kafkaConsumer = new KafkaConsumerMock();
 
         Service.start(
-            logger,
+            undefined,
             mockStorage,
             kafkaConsumer
         ).then(() => {

@@ -31,11 +31,11 @@
 "use strict"
 
 import {
-  IRawMessage,
-  MLKafkaRawConsumer,
-  MLKafkaRawConsumerOptions,
-  MLKafkaRawConsumerOutputType,
-  MLKafkaRawProducerOptions
+    IRawMessage,
+    MLKafkaRawConsumer,
+    MLKafkaRawConsumerOptions,
+    MLKafkaRawConsumerOutputType,
+    MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
 import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
@@ -46,10 +46,8 @@ jest.setTimeout(30000); // change this to suit the test (ms)
 const logger: ConsoleLogger = new ConsoleLogger();
 
 let producerOptions: MLKafkaRawProducerOptions;
-let kafkaConsumer: MLKafkaRawConsumer;
-let consumerOptions: MLKafkaRawConsumerOptions;
 
-let kafkaLogger : KafkaLogger;
+let kafkaLogger: KafkaLogger;
 
 const BC_NAME = "logging-bc";
 const APP_NAME = "client-lib-integration-tests";
@@ -60,92 +58,97 @@ const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 
 const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "client-lib-integration-tests-logs-topic";
 
-function log(logger:ILogger, testObj:any){
-  logger.trace(`${logger.getLogLevel()} - hello world from trace`, testObj);
-  logger.debug(`${logger.getLogLevel()} - hello world from debug`, testObj);
-  logger.info(`${logger.getLogLevel()} - hello world from info`, testObj);
-  logger.warn(`${logger.getLogLevel()} - hello world from warn`, testObj);
-  logger.error(`${logger.getLogLevel()} - hello world from error`, testObj);
-  logger.fatal(`${logger.getLogLevel()} - hello world from fatal`, testObj);
+function log(logger: ILogger, testObj: any) {
+    logger.trace(`${logger.getLogLevel()} - hello world from trace`, testObj);
+    logger.debug(`${logger.getLogLevel()} - hello world from debug`, testObj);
+    logger.info(`${logger.getLogLevel()} - hello world from info`, testObj);
+    logger.warn(`${logger.getLogLevel()} - hello world from warn`, testObj);
+    logger.error(`${logger.getLogLevel()} - hello world from error`, testObj);
+    logger.fatal(`${logger.getLogLevel()} - hello world from fatal`, testObj);
 }
 
 describe("client-lib-integration-tests", () => {
 
-  beforeAll(async () => {
-    producerOptions = {
-      kafkaBrokerList: KAFKA_URL,
-      producerClientId: APP_NAME
-    }
+    beforeAll(async () => {
+        producerOptions = {
+            kafkaBrokerList: KAFKA_URL,
+            producerClientId: APP_NAME
+        }
 
-    kafkaLogger = new KafkaLogger(BC_NAME, APP_NAME, APP_VERSION, producerOptions, KAFKA_LOGS_TOPIC, LogLevel.TRACE);
-    await kafkaLogger.init();
+        kafkaLogger = new KafkaLogger(BC_NAME, APP_NAME, APP_VERSION, producerOptions, KAFKA_LOGS_TOPIC, LogLevel.TRACE);
+        await kafkaLogger.init();
+    })
 
-    consumerOptions = {
-      kafkaBrokerList: KAFKA_URL,
-      kafkaGroupId: APP_NAME,
-      outputType: MLKafkaRawConsumerOutputType.Json
-    };
+    afterAll(async () => {
+        // Cleanup
+        await new Promise(f => setTimeout(f, 1000));
+        await kafkaLogger.destroy();
+    })
 
-    kafkaConsumer = new MLKafkaRawConsumer(consumerOptions, logger);
-  })
+    test("produce and consume logs using the KafkaLogger", async () => {
+        jest.setTimeout(1000)
+        let receivedMessages = 0;
 
-  afterAll(async () => {
-    // Cleanup
-    await kafkaLogger.destroy();
-    await kafkaConsumer.destroy(false);
-  })
+        async function handleLogMsg(message: IRawMessage): Promise<void> {
+            receivedMessages++;
+            logger.debug(`Got log message in handler: ${JSON.stringify(message.value, null, 2)}`);
+            return await Promise.resolve();
+        }
 
-  test("produce and consume logs using the KafkaLogger", async () => {
-    jest.setTimeout(1000)
-    let receivedMessages = 0;
-    async function handleLogMsg (message: IRawMessage): Promise<void> {
-      receivedMessages++;
-      logger.debug(`Got log message in handler: ${JSON.stringify(message.value, null, 2)}`);
-      return await Promise.resolve();
-    }
+        let kafkaConsumer: MLKafkaRawConsumer;
+        let consumerOptions: MLKafkaRawConsumerOptions;
+        consumerOptions = {
+            kafkaBrokerList: KAFKA_URL,
+            kafkaGroupId: APP_NAME,
+            outputType: MLKafkaRawConsumerOutputType.Json
+        };
 
-    kafkaConsumer.setCallbackFn(handleLogMsg);
-    kafkaConsumer.setTopics([KAFKA_LOGS_TOPIC]);
-    await kafkaConsumer.connect();
-    await kafkaConsumer.start();
-    await new Promise(f => setTimeout(f, 2000));
+        kafkaConsumer = new MLKafkaRawConsumer(consumerOptions, logger);
 
-    await kafkaLogger.trace("Logger message. Hello World! Lets trace.");
-    await kafkaLogger.debug("Logger message. Hello World! Lets debug.");
-    await kafkaLogger.info("Logger message. Hello World! Lets info.");
-    await kafkaLogger.warn("Logger message. Hello World! Lets warn.");
-    await kafkaLogger.error("Logger message. Hello World! Lets error.");
-    await kafkaLogger.fatal("Logger message. Hello World! Lets fatal.");
+        kafkaConsumer.setCallbackFn(handleLogMsg);
+        kafkaConsumer.setTopics([KAFKA_LOGS_TOPIC]);
+        await kafkaConsumer.connect();
+        await kafkaConsumer.start();
+        await new Promise(f => setTimeout(f, 2000));
 
-    // Wait 10 second to receive the event
-    await new Promise(f => setTimeout(f, 5000));
+        await kafkaLogger.trace("Logger message. Hello World! Lets trace.");
+        await kafkaLogger.debug("Logger message. Hello World! Lets debug.");
+        await kafkaLogger.info("Logger message. Hello World! Lets info.");
+        await kafkaLogger.warn("Logger message. Hello World! Lets warn.");
+        await kafkaLogger.error("Logger message. Hello World! Lets error.");
+        await kafkaLogger.fatal("Logger message. Hello World! Lets fatal.");
 
-    expect(receivedMessages).toBeGreaterThanOrEqual(6);
+        // Wait 10 second to receive the event
+        await new Promise(f => setTimeout(f, 5000));
 
-  });
+        expect(receivedMessages).toBeGreaterThanOrEqual(6);
+
+        await kafkaConsumer.stop();
+        await kafkaConsumer.disconnect();
+    });
 
 
-  test("error object tests", async () => {
+    test("error object tests", async () => {
 
-    const err1 = new Error("Error object message - style 1");
-    console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
-    kafkaLogger.error("An error occurred", err1);
+        const err1 = new Error("Error object message - style 1");
+        console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+        kafkaLogger.error("An error occurred", err1);
 
-    const err2 = new Error("Error object message - style 2");
-    console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
-    kafkaLogger.error("An error occurred", err2);
+        const err2 = new Error("Error object message - style 2");
+        console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
+        kafkaLogger.error("An error occurred", err2);
 
-    await expect(true);
-  })
+        await expect(true);
+    })
 
-  test("child logger tests", async () => {
+    test("child logger tests", async () => {
 
-    const childLogger = kafkaLogger.createChild("subcomponent");
+        const childLogger = kafkaLogger.createChild("subcomponent");
 
-    console.log("\r\n*** Child logger output follows ***");
+        console.log("\r\n*** Child logger output follows ***");
 
-    log(childLogger, {});
+        log(childLogger, {});
 
-    await expect(true);
-  })
+        await expect(true);
+    })
 })

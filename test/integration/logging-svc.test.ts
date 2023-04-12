@@ -30,8 +30,8 @@
 
 "use strict"
 
-import {Service} from "@mojaloop/logging-bc-logging-svc/dist/application/service";
-import {LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib"
+import {Service} from "../../packages/logging-svc/src/application/service";
+import {LogEntry, LogLevel} from "../../packages/public-types-lib/src"
 import {
     MLKafkaRawConsumer,
     MLKafkaRawConsumerOptions,
@@ -39,7 +39,8 @@ import {
     MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib"
 
-import {DefaultLogger, KafkaLogger} from "@mojaloop/logging-bc-client-lib";
+// import {DefaultLogger, KafkaLogger} from "@mojaloop/logging-bc-client-lib";
+import {DefaultLogger, KafkaLogger} from "../../packages/client-lib/src";
 import {ElasticsearchLogStorage} from "../../packages/logging-svc/src/infrastructure/es_log_storage";
 import {LogEventHandler} from "../../packages/logging-svc/src/application/log_event_handler";
 import {Client} from "@elastic/elasticsearch";
@@ -100,7 +101,7 @@ describe("nodejs-rdkafka-log-bc", () => {
 
     afterAll(async () => {
         // Cleanup
-        await new Promise(f => setTimeout(f, 2000));
+        await new Promise(f => setTimeout(f, 1000));
         await Service.stop();
     });
 

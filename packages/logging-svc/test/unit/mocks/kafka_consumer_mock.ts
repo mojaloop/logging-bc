@@ -59,6 +59,10 @@ export class KafkaConsumerMock implements IRawMessageConsumer{
         return Promise.resolve(undefined);
     }
 
+    startAndWaitForRebalance(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
     stop(): Promise<void> {
         return Promise.resolve(undefined);
     }

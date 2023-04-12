@@ -33,45 +33,38 @@
 import {ILogger, LogEntry} from "@mojaloop/logging-bc-public-types-lib";
 import {
     IRawMessage,
-    MLKafkaRawConsumer,
-    MLKafkaRawConsumerOptions
+    IRawMessageConsumer
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
-import {MLKafkaRawConsumerOutputType} from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 import {ILogStorageAdapter} from "./interfaces";
 
 export class LogEventHandler {
     private _storage: ILogStorageAdapter;
     private _logger: ILogger;
     // private _consumerOpts: MLKafkaRawConsumerOptions;
-    // private _kafkaTopic: string;
-    // private _kafkaConsumer: MLKafkaRawConsumer;
+    private _kafkaLogsTopic: string;
+    private _kafkaConsumer: IRawMessageConsumer;
 
     constructor(
         logger: ILogger,
         storage: ILogStorageAdapter,
-        // kafkaURL: string,
-        // kafkaGroupId: string,
-        // kafkaTopic: string
+        kafkaConsumer: IRawMessageConsumer,
+        logsTopic: string
     ) {
         this._logger = logger.createChild(this.constructor.name);
         this._storage = storage;
-        // this._kafkaTopic = kafkaTopic;
-        //
-        // this._consumerOpts = {
-        //     kafkaBrokerList: kafkaURL,
-        //     kafkaGroupId: kafkaGroupId,
-        //     outputType: MLKafkaRawConsumerOutputType.Json
-        // };
+        this._kafkaConsumer = kafkaConsumer;
+        this._kafkaLogsTopic = logsTopic;
     }
 
     async init(): Promise<void> {
         await this._storage.init();
 
-        // this._kafkaConsumer = new MLKafkaRawConsumer(this._consumerOpts, this._logger);
-        // this._kafkaConsumer.setTopics([this._kafkaTopic]);
-        // this._kafkaConsumer.setCallbackFn(this.processLogMessage.bind(this));
-        // await this._kafkaConsumer.connect();
-        // await this._kafkaConsumer.start();
+        // hook logHandler process fn to the consumer handler
+        this._kafkaConsumer.setCallbackFn(this.processLogMessage.bind(this));
+        this._kafkaConsumer.setTopics([this._kafkaLogsTopic]);
+        await this._kafkaConsumer.connect();
+
+        await this._kafkaConsumer.startAndWaitForRebalance();
     }
 
     async processLogMessage(message: IRawMessage): Promise<void> {
@@ -82,11 +75,11 @@ export class LogEventHandler {
             logEntries.push(value as LogEntry);
         } else {
             this._logger.error("Unable to process value [" + value + "] of type [" + (typeof value) + "].");
-            return Promise.resolve(undefined);
+            return Promise.resolve();
         }
 
-        if (logEntries==undefined || logEntries.length==0)
-            return Promise.resolve(undefined);
+        if (logEntries.length == 0)
+            return Promise.resolve();
 
         await this._storage.store(logEntries);
         return;

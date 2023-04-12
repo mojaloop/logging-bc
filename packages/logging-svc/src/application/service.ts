@@ -32,7 +32,7 @@ import {ILogStorageAdapter} from "./interfaces";
 import {ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {ElasticsearchLogStorage} from "../infrastructure/es_log_storage";
 import {DefaultLogger} from "@mojaloop/logging-bc-client-lib";
-import {IRawMessageConsumer, MLKafkaJsonConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
+import {IRawMessageConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
 const BC_NAME = "logging-bc";
 const APP_NAME = "logging-svc";
@@ -62,7 +62,6 @@ export class Service {
         logStorageAdapter?:ILogStorageAdapter,
         kafkaConsumer?: IRawMessageConsumer
     ): Promise<void>{
-        /* istanbul ignore if */
         if (!logger) {
             logger = new DefaultLogger(
                     BC_NAME,
@@ -86,12 +85,10 @@ export class Service {
                     rejectUnauthorized: false,
                 }
             };
-            logStorageAdapter = new ElasticsearchLogStorage(elasticOpts, ELASTICSEARCH_LOGS_INDEX, logger);
+            logStorageAdapter = new ElasticsearchLogStorage(elasticOpts, ELASTICSEARCH_LOGS_INDEX, this.logger);
         }
         this.logStorageAdapter = logStorageAdapter;
 
-        // create the handler
-        this.logHandler = new LogEventHandler(logger, this.logStorageAdapter);
 
         /* istanbul ignore if */
         if(!kafkaConsumer){
@@ -100,28 +97,28 @@ export class Service {
                 kafkaGroupId: `${BC_NAME}_${APP_NAME}`,
             };
             kafkaConsumer = new MLKafkaRawConsumer(kafkaConsumerOptions, this.logger);
-            kafkaConsumer.setTopics([KAFKA_LOGS_TOPIC]);
         }
         this.consumer = kafkaConsumer;
+
+        // create the handler instance
+        this.logHandler = new LogEventHandler(this.logger, this.logStorageAdapter, this.consumer, KAFKA_LOGS_TOPIC);
 
         await this.logHandler.init().catch((err) => {
             this.logger.error("logHandler init error", err);
         });
 
-        // hook logHandler process fn to the consumer handler
-        this.consumer.setCallbackFn(this.logHandler.processLogMessage.bind(this.logHandler));
-
-        await kafkaConsumer.connect();
-        await kafkaConsumer.start();
-
         this.logger.info(`Logging Handler service v: ${APP_VERSION} initialised`);
     }
 
     static async stop(force = false): Promise<void> {
-        if (this.consumer) await this.consumer.stop();
+        if (this.consumer){
+            await this.consumer.stop();
+            await this.consumer.disconnect(force);
+        }
+
         if (this.logHandler)  await this.logHandler.destroy();
         if (this.logStorageAdapter) await this.logStorageAdapter.destroy();
-        if (this.consumer) await this.consumer.destroy(true);
+        if (this.consumer) await this.consumer.destroy(force);
     }
 }
 
@@ -131,7 +128,7 @@ export class Service {
  */
 
 async function _handle_int_and_term_signals(signal: NodeJS.Signals): Promise<void> {
-    console.info(`Service - ${signal} received - cleaning up...`);
+    console.log(`Service - ${signal} received - cleaning up...`);
     await Service.stop(true);
     process.exit();
 }
