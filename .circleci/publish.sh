@@ -201,7 +201,7 @@ fi
 ############################################
 printHeader "Phase 5 - Pushing commits to git"
 
-if [[ PUBLISHED_NPM_PACKAGES_COUNT -eq 0 ]]; then
+if [[ PUBLISHED_NPM_PACKAGES_COUNT -eq 0 ]] && [[ PUBLISHED_DOCKERHUB_PACKAGES_COUNT -eq 0 ]]; then
     echo -e "No Packages were published, nothing to push to git"
     exit 0
 fi
