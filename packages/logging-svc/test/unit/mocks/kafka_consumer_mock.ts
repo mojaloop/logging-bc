@@ -71,4 +71,10 @@ export class KafkaConsumerMock implements IRawMessageConsumer{
     injectMessage(message: IRawMessage){
         this._handler(message);
     }
+
+    setBatchCallbackFn(batchHandlerCallback: (messages: IRawMessage[]) => Promise<void>): void {
+    }
+
+    setBatchSize(size: number): void {
+    }
 }
