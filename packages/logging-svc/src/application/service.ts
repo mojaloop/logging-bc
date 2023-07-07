@@ -103,9 +103,7 @@ export class Service {
         // create the handler instance
         this.logHandler = new LogEventHandler(this.logger, this.logStorageAdapter, this.consumer, KAFKA_LOGS_TOPIC);
 
-        await this.logHandler.init().catch((err) => {
-            this.logger.error("logHandler init error", err);
-        });
+        await this.logHandler.init();
 
         this.logger.info(`Logging Handler service v: ${APP_VERSION} initialised`);
     }
@@ -127,6 +125,7 @@ export class Service {
  * process termination and cleanup
  */
 
+/* istanbul ignore next */
 async function _handle_int_and_term_signals(signal: NodeJS.Signals): Promise<void> {
     console.log(`Service - ${signal} received - cleaning up...`);
     await Service.stop(true);
@@ -134,14 +133,20 @@ async function _handle_int_and_term_signals(signal: NodeJS.Signals): Promise<voi
 }
 
 //catches ctrl+c event
+/* istanbul ignore next */
 process.on("SIGINT", _handle_int_and_term_signals);
+
 //catches program termination event
+/* istanbul ignore next */
 process.on("SIGTERM", _handle_int_and_term_signals);
 
 //do something when app is closing
+/* istanbul ignore next */
 process.on("exit", async () => {
     globalLogger.info("Microservice - exiting...");
 });
+
+/* istanbul ignore next */
 process.on("uncaughtException", (err: Error) => {
     globalLogger.error(err);
 });

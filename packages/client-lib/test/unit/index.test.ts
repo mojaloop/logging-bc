@@ -28,7 +28,7 @@ describe("default logger tests", () => {
 		// Cleanup
 	})
 
-    test("constructor tests", async () => {
+    test("constructor test", async () => {
         const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LogLevel.ERROR);
     });
 
@@ -115,6 +115,10 @@ describe("default logger tests", () => {
 		childLogger.debug(childLogger, ["a", "b"], [1,2]);
 
 		await expect(true);
-	})
+	});
+
+    test("constructor test with no log level provided", async () => {
+        const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION);
+    });
 
 })

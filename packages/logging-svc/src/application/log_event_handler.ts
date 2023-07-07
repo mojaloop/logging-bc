@@ -57,14 +57,19 @@ export class LogEventHandler {
     }
 
     async init(): Promise<void> {
-        await this._storage.init();
+        try {
+            await this._storage.init();
 
-        // hook logHandler process fn to the consumer handler
-        this._kafkaConsumer.setCallbackFn(this.processLogMessage.bind(this));
-        this._kafkaConsumer.setTopics([this._kafkaLogsTopic]);
-        await this._kafkaConsumer.connect();
+            // hook logHandler process fn to the consumer handler
+            this._kafkaConsumer.setCallbackFn(this.processLogMessage.bind(this));
+            this._kafkaConsumer.setTopics([this._kafkaLogsTopic]);
+            await this._kafkaConsumer.connect();
 
-        await this._kafkaConsumer.startAndWaitForRebalance();
+            await this._kafkaConsumer.startAndWaitForRebalance();
+        }catch (e) {
+            this._logger.error(e);
+            throw e;
+        }
     }
 
     async processLogMessage(message: IRawMessage): Promise<void> {

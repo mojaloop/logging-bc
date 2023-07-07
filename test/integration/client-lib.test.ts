@@ -39,7 +39,8 @@ import {
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
 import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
-import {KafkaLogger} from "@mojaloop/logging-bc-client-lib";
+import {DefaultLogger, KafkaLogger} from "@mojaloop/logging-bc-client-lib";
+import {BaseLogger} from "@mojaloop/logging-bc-client-lib/dist/base_logger";
 
 jest.setTimeout(30000); // change this to suit the test (ms)
 
@@ -48,6 +49,7 @@ const logger: ConsoleLogger = new ConsoleLogger();
 let producerOptions: MLKafkaRawProducerOptions;
 
 let kafkaLogger: KafkaLogger;
+let defaultlogger: DefaultLogger
 
 const BC_NAME = "logging-bc";
 const APP_NAME = "client-lib-integration-tests";
@@ -77,6 +79,7 @@ describe("client-lib-integration-tests", () => {
 
         kafkaLogger = new KafkaLogger(BC_NAME, APP_NAME, APP_VERSION, producerOptions, KAFKA_LOGS_TOPIC, LogLevel.TRACE);
         await kafkaLogger.init();
+        defaultlogger = new DefaultLogger(BC_NAME,APP_NAME,APP_VERSION)
     })
 
     afterAll(async () => {
@@ -150,5 +153,21 @@ describe("client-lib-integration-tests", () => {
         log(childLogger, {});
 
         await expect(true);
-    })
+    });
+
+    test("Client-lib check log level TRACE", async()=>{
+        // Arrange
+        defaultlogger.setLogLevel(LogLevel.TRACE);
+
+        // Assert
+        expect(defaultlogger.isTraceEnabled()).toBeTruthy();
+    });
+
+    test("Client-lib check log level DEBUG", async ()=>{
+        // Arrange
+        defaultlogger.setLogLevel(LogLevel.DEBUG);
+
+        // Assert
+        expect(defaultlogger.isDebugEnabled()).toBeTruthy();
+    });
 })

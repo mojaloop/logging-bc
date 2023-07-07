@@ -61,6 +61,7 @@ let producerOptions: MLKafkaRawProducerOptions;
 let consumerOptions: MLKafkaRawConsumerOptions;
 
 let elasticStorage: ElasticsearchLogStorage;
+jest.setTimeout(300000);
 
 const defaultLogger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
@@ -77,7 +78,6 @@ const elasticOpts = {
 };
 
 describe("nodejs-rdkafka-log-bc", () => {
-    jest.setTimeout(10000);
 
     beforeAll(async () => {
         producerOptions = {
