@@ -30,6 +30,7 @@
 
 "use strict"
 
+import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {
     IRawMessage,
     MLKafkaRawConsumer,
@@ -38,7 +39,6 @@ import {
     MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
-import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {KafkaLogger} from "@mojaloop/logging-bc-client-lib";
 
 jest.setTimeout(30000); // change this to suit the test (ms)
@@ -90,9 +90,10 @@ describe("client-lib-integration-tests", () => {
         let receivedMessages = 0;
 
         async function handleLogMsg(message: IRawMessage): Promise<void> {
+            console.log("received message");
             receivedMessages++;
             logger.debug(`Got log message in handler: ${JSON.stringify(message.value, null, 2)}`);
-            return await Promise.resolve();
+            return Promise.resolve();
         }
 
         let kafkaConsumer: MLKafkaRawConsumer;
@@ -111,12 +112,12 @@ describe("client-lib-integration-tests", () => {
         await kafkaConsumer.start();
         await new Promise(f => setTimeout(f, 2000));
 
-        await kafkaLogger.trace("Logger message. Hello World! Lets trace.");
-        await kafkaLogger.debug("Logger message. Hello World! Lets debug.");
-        await kafkaLogger.info("Logger message. Hello World! Lets info.");
-        await kafkaLogger.warn("Logger message. Hello World! Lets warn.");
-        await kafkaLogger.error("Logger message. Hello World! Lets error.");
-        await kafkaLogger.fatal("Logger message. Hello World! Lets fatal.");
+        kafkaLogger.trace("Logger message. Hello World! Lets trace.");
+        kafkaLogger.debug("Logger message. Hello World! Lets debug.");
+        kafkaLogger.info("Logger message. Hello World! Lets info.");
+        kafkaLogger.warn("Logger message. Hello World! Lets warn.");
+        kafkaLogger.error("Logger message. Hello World! Lets error.");
+        kafkaLogger.fatal("Logger message. Hello World! Lets fatal.");
 
         // Wait 10 second to receive the event
         await new Promise(f => setTimeout(f, 5000));
