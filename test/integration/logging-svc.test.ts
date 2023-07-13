@@ -30,20 +30,19 @@
 
 "use strict"
 
-import {Service} from "../../packages/logging-svc/src/application/service";
-import {LogEntry, LogLevel} from "../../packages/public-types-lib/src"
+// import {DefaultLogger, KafkaLogger} from "@mojaloop/logging-bc-client-lib";
+import {DefaultLogger, KafkaLogger} from "../../packages/client-lib/src";
 import {
-    MLKafkaRawConsumer,
     MLKafkaRawConsumerOptions,
     MLKafkaRawConsumerOutputType,
     MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib"
 
-// import {DefaultLogger, KafkaLogger} from "@mojaloop/logging-bc-client-lib";
-import {DefaultLogger, KafkaLogger} from "../../packages/client-lib/src";
+import {Client} from "@elastic/elasticsearch";
 import {ElasticsearchLogStorage} from "../../packages/logging-svc/src/infrastructure/es_log_storage";
 import {LogEventHandler} from "../../packages/logging-svc/src/application/log_event_handler";
-import {Client} from "@elastic/elasticsearch";
+import {LogLevel} from "../../packages/public-types-lib/src"
+import {Service} from "../../packages/logging-svc/src/application/service";
 
 const BC_NAME = "logging-bc";
 const APP_NAME = "client-lib-integration-tests";

@@ -32,7 +32,16 @@
 
 import {IRawMessage, IRawMessageConsumer} from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
+import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
+
 export class KafkaConsumerMock implements IRawMessageConsumer{
+    setBatchCallbackFn(_batchHandlerCallback: (messages: IRawMessage[]) => Promise<void>): void {
+        return;
+    }
+
+    setBatchSize(size: number): void {
+        return;
+    }
     private _handler: (message: IRawMessage)=>void;
 
     connect(): Promise<void> {
