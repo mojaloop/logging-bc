@@ -38,9 +38,12 @@ import {
     MLKafkaRawProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
-import {ConsoleLogger, ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
-import {DefaultLogger, KafkaLogger} from "@mojaloop/logging-bc-client-lib";
-import {BaseLogger} from "@mojaloop/logging-bc-client-lib/dist/base_logger";
+import {Service} from "../../packages/logging-svc/src/application/service"
+import {ConsoleLogger, ILogger, LogLevel} from "../../packages/public-types-lib/src/index";
+import {DefaultLogger, KafkaLogger} from "../../packages/client-lib/src/index";
+import {ElasticsearchLogStorage} from "../../packages/logging-svc/src/infrastructure/es_log_storage";
+import {Client} from "@elastic/elasticsearch";
+import exp = require("constants");
 
 jest.setTimeout(30000); // change this to suit the test (ms)
 
@@ -52,13 +55,35 @@ let kafkaLogger: KafkaLogger;
 let defaultlogger: DefaultLogger
 
 const BC_NAME = "logging-bc";
-const APP_NAME = "client-lib-integration-tests";
+const APP_NAME = "logging-bc-integration-tests";
 const APP_VERSION = "0.0.1";
 const LOGLEVEL = LogLevel.TRACE;
 
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 
-const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "client-lib-integration-tests-logs-topic";
+const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "logs";
+const ES_LOGS_INDEX = "ml-logging";
+const ELASTICSEARCH_URL = process.env["ELASTICSEARCH_URL"] || "https://localhost:9200";
+
+
+let consumerOptions: MLKafkaRawConsumerOptions;
+
+let elasticStorage: ElasticsearchLogStorage;
+jest.setTimeout(300000);
+
+const defaultLogger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
+
+const elasticOpts = {
+    node: ELASTICSEARCH_URL,
+    auth: {
+        username: "elastic",
+        password: process.env.elasticsearch_password || "elasticSearchPas42",
+    },
+    tls: {
+        ca: process.env.elasticsearch_certificate,
+        rejectUnauthorized: false,
+    }
+};
 
 function log(logger: ILogger, testObj: any) {
     logger.trace(`${logger.getLogLevel()} - hello world from trace`, testObj);
@@ -69,7 +94,8 @@ function log(logger: ILogger, testObj: any) {
     logger.fatal(`${logger.getLogLevel()} - hello world from fatal`, testObj);
 }
 
-describe("client-lib-integration-tests", () => {
+
+describe("logging-bc-integration-tests", () => {
 
     beforeAll(async () => {
         producerOptions = {
@@ -79,14 +105,26 @@ describe("client-lib-integration-tests", () => {
 
         kafkaLogger = new KafkaLogger(BC_NAME, APP_NAME, APP_VERSION, producerOptions, KAFKA_LOGS_TOPIC, LogLevel.TRACE);
         await kafkaLogger.init();
-        defaultlogger = new DefaultLogger(BC_NAME,APP_NAME,APP_VERSION)
-    })
+        defaultlogger = new DefaultLogger(BC_NAME,APP_NAME,APP_VERSION);
+
+        // Command Handler
+        consumerOptions = {
+            kafkaBrokerList: KAFKA_URL,
+            kafkaGroupId: "test_consumer_group",
+            outputType: MLKafkaRawConsumerOutputType.Json
+        };
+
+        elasticStorage = new ElasticsearchLogStorage(elasticOpts, ES_LOGS_INDEX, defaultLogger);
+        await Service.start();
+        console.log("Service start complete");
+    });
 
     afterAll(async () => {
         // Cleanup
         await new Promise(f => setTimeout(f, 1000));
         await kafkaLogger.destroy();
-    })
+        await Service.stop();
+    });
 
     test("produce and consume logs using the KafkaLogger", async () => {
         jest.setTimeout(1000)
@@ -111,8 +149,8 @@ describe("client-lib-integration-tests", () => {
         kafkaConsumer.setCallbackFn(handleLogMsg);
         kafkaConsumer.setTopics([KAFKA_LOGS_TOPIC]);
         await kafkaConsumer.connect();
-        await kafkaConsumer.start();
-        await new Promise(f => setTimeout(f, 2000));
+        await kafkaConsumer.startAndWaitForRebalance();
+        // await new Promise(f => setTimeout(f, 2000));
 
         await kafkaLogger.trace("Logger message. Hello World! Lets trace.");
         await kafkaLogger.debug("Logger message. Hello World! Lets debug.");
@@ -130,7 +168,6 @@ describe("client-lib-integration-tests", () => {
         await kafkaConsumer.disconnect();
     });
 
-
     test("error object tests", async () => {
 
         const err1 = new Error("Error object message - style 1");
@@ -142,7 +179,7 @@ describe("client-lib-integration-tests", () => {
         kafkaLogger.error("An error occurred", err2);
 
         await expect(true);
-    })
+    });
 
     test("child logger tests", async () => {
 
@@ -155,7 +192,7 @@ describe("client-lib-integration-tests", () => {
         await expect(true);
     });
 
-    test("Client-lib check log level TRACE", async()=>{
+    test("Client-lib: check log level TRACE", async()=>{
         // Arrange
         defaultlogger.setLogLevel(LogLevel.TRACE);
 
@@ -163,11 +200,64 @@ describe("client-lib-integration-tests", () => {
         expect(defaultlogger.isTraceEnabled()).toBeTruthy();
     });
 
-    test("Client-lib check log level DEBUG", async ()=>{
+    test("Client-lib: check log level DEBUG", async ()=>{
         // Arrange
         defaultlogger.setLogLevel(LogLevel.DEBUG);
 
         // Assert
         expect(defaultlogger.isDebugEnabled()).toBeTruthy();
     });
-})
+
+    test("produce and consume log-bc using kafka and elasticsearch", async () => {
+        const kafkaLogger = new KafkaLogger(
+            BC_NAME,
+            APP_NAME,
+            APP_VERSION,
+            producerOptions,
+            KAFKA_LOGS_TOPIC,
+            LOGLEVEL
+        );
+        await kafkaLogger.init();
+        // await kafkaLogger.info("Logger message. Hello World! Info.");
+        await kafkaLogger.debug("Logger message. Hello World! Debug.");
+        // await kafkaLogger.warn("Logger message. Hello World! Warn.");
+        await new Promise(f => setTimeout(f, 4000));
+
+        const esClient = new Client(elasticOpts);
+        const result = await esClient.search({
+            index: "ml-logging",
+            query: {
+                match: {
+                    level: "debug"
+                }
+            }
+        })
+
+        expect(result.hits.hits.length).toBeGreaterThan(0);
+
+        await esClient.close();
+        await kafkaLogger.destroy();
+    });
+
+    test("public-types-lib: ConsoleLogger create a child logger from a console logger should pass", async ()=>{
+        const consoleLogger: ConsoleLogger = new ConsoleLogger();
+        consoleLogger.setLogLevel(LOGLEVEL);
+        expect(consoleLogger.createChild(BC_NAME)).resolves;
+    });
+
+    test("public-types-lib: ConsoleLogger get LogLevel should pass", async ()=>{
+        const consoleLogger: ConsoleLogger = new ConsoleLogger();
+        consoleLogger.setLogLevel(LOGLEVEL);
+        expect(consoleLogger.getLogLevel()).toEqual(LOGLEVEL);
+    });
+
+    test("public-types-lib: ConsoleLogger check LogLevel", async ()=>{
+        const consoleLogger: ConsoleLogger = new ConsoleLogger();
+        consoleLogger.setLogLevel(LOGLEVEL);
+        expect(consoleLogger.isDebugEnabled()).toBeTruthy();
+        expect(consoleLogger.isErrorEnabled()).toBeTruthy();
+        expect(consoleLogger.isWarnEnabled()).toBeTruthy();
+        expect(consoleLogger.isFatalEnabled()).toBeTruthy();
+        expect(consoleLogger.isTraceEnabled()).toBeTruthy();
+    });
+});
