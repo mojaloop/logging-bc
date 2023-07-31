@@ -87,10 +87,17 @@ export abstract class BaseLogger implements ILogger {
         return this._logLevel === LogLevel.FATAL || this.isErrorEnabled();
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     abstract trace (message?: any, ...optionalParams: any[]): void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     abstract debug (message?: any, ...optionalParams: any[]): void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     abstract info (message?: any, ...optionalParams: any[]): void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     abstract warn (message?: any, ...optionalParams: any[]): void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     abstract error (message?: any, ...optionalParams: any[]): void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     abstract fatal (message?: any, ...optionalParams: any[]): void;
+
 }

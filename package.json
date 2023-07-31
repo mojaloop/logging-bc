@@ -23,7 +23,6 @@
     "clean": "npm run clean:dist; npm run clean:npm",
     "clean:npm": "rm -Rf node_modules; npm -ws run clean:npm",
     "clean:dist": "rm -Rf dist; npm -ws run clean:dist",
-
     "standard": "yarn run --no-progress --stream lint'",
     "lint": "npm -ws -p run lint",
     "lint:fix": "npm -ws -p run lint:fix",
@@ -40,16 +39,17 @@
     "publish:client-lib": "npm -w @mojaloop/logging-bc-client-lib run npm_publish"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.2",
-    "@types/node": "^20.4.0",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
-    "eslint": "^8.44.0",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
+    "eslint": "^8.46.0",
     "husky": "^8.0.3",
-    "jest": "^29.6.1",
-    "npm-check-updates": "^16.10.15",
-	"nyc": "^15.1.0",
+    "jest": "^29.6.2",
+    "npm-check-updates": "^16.10.17",
+    "nyc": "^15.1.0",
     "ts-jest": "^29.1.1",
+    "tslib": "^2.6.1",
     "typescript": "^5.1.6"
   },
   "workspaces": [
@@ -57,8 +57,5 @@
     "packages/client-lib",
     "packages/logging-svc",
     "packages/*"
-  ],
-  "dependencies": {
-
-  }
+  ]
 }

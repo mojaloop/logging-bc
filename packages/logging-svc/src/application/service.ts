@@ -37,7 +37,7 @@ import {IRawMessageConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } fro
 const BC_NAME = "logging-bc";
 const APP_NAME = "logging-svc";
 const APP_VERSION = process.env.npm_package_version || "0.0.1";
-const PRODUCTION_MODE = process.env["PRODUCTION_MODE"] || false;
+// const PRODUCTION_MODE = process.env["PRODUCTION_MODE"] || false;
 const LOG_LEVEL:LogLevel = process.env["LOG_LEVEL"] as LogLevel || LogLevel.DEBUG;
 
 const KAFKA_LOGS_TOPIC = process.env["KAFKA_LOGS_TOPIC"] || "logs";

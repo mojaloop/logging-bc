@@ -35,6 +35,7 @@ import {ILogger, LogLevel} from "./index";
 export class ConsoleLogger implements ILogger {
     protected _logLevel: LogLevel = LogLevel.DEBUG; // default
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createChild(componentName:string):ILogger{
         // nop - not implemented here, just return the same instance
         return this;
@@ -71,26 +72,32 @@ export class ConsoleLogger implements ILogger {
         return this._logLevel === LogLevel.FATAL || this.isErrorEnabled();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     trace (message?: any, ...optional: any[]): void {
         this.isTraceEnabled() && console.trace(message, ...optional);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     debug (message?: any, ...optional: any[]): void {
         this.isDebugEnabled() && console.debug(message, ...optional);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     info (message?: any, ...optional: any[]): void {
         this.isInfoEnabled() && console.info(message, ...optional);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     warn (message?: any, ...optional: any[]): void {
         this.isWarnEnabled() && console.warn(message, ...optional);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     error (message?: any, ...optional: any[]): void {
         this.isErrorEnabled() && console.error(message, ...optional);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     fatal (message?: any, ...optional: any[]): void {
         this.isFatalEnabled() && console.error(message, ...optional);
     }

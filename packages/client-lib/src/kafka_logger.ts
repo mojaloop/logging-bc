@@ -52,6 +52,7 @@ class KafkaLoggerTransport extends Transport {
     super();
 
     if(!opts.producerOptions.producerClientId){
+        /* istanbul ignore next */
       opts.producerOptions.producerClientId = "KafkaLoggerTransport_"+Math.random().toString(36).slice(2, 7);
     }
 
@@ -79,7 +80,7 @@ class KafkaLoggerTransport extends Transport {
       component: info.componentName,
       meta: info.extra
     };
-    
+
     await this._kafkaProducer.send({
       topic: this._kafkaTopic,
       value: logEntry,
@@ -136,6 +137,7 @@ export class KafkaLogger extends DefaultLogger implements ILogger{
   /**
    * @deprecated - use init() instead
    */
+  /* istanbul ignore next */
   async start() : Promise<void>  {
     return this.init();
   }

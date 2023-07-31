@@ -240,24 +240,84 @@ describe("logging-bc-integration-tests", () => {
     });
 
     test("public-types-lib: ConsoleLogger create a child logger from a console logger should pass", async ()=>{
+        // Arrange
         const consoleLogger: ConsoleLogger = new ConsoleLogger();
         consoleLogger.setLogLevel(LOGLEVEL);
+
+        // Act and Assert
         expect(consoleLogger.createChild(BC_NAME)).resolves;
     });
 
     test("public-types-lib: ConsoleLogger get LogLevel should pass", async ()=>{
+        // Arrange
         const consoleLogger: ConsoleLogger = new ConsoleLogger();
+
+        // Act and Assert
         consoleLogger.setLogLevel(LOGLEVEL);
         expect(consoleLogger.getLogLevel()).toEqual(LOGLEVEL);
     });
 
     test("public-types-lib: ConsoleLogger check LogLevel", async ()=>{
+        // Arrange
         const consoleLogger: ConsoleLogger = new ConsoleLogger();
         consoleLogger.setLogLevel(LOGLEVEL);
+
+        // Act and Assert
         expect(consoleLogger.isDebugEnabled()).toBeTruthy();
         expect(consoleLogger.isErrorEnabled()).toBeTruthy();
         expect(consoleLogger.isWarnEnabled()).toBeTruthy();
         expect(consoleLogger.isFatalEnabled()).toBeTruthy();
         expect(consoleLogger.isTraceEnabled()).toBeTruthy();
+    });
+
+    test("DefaultLogger - error object tests", async () => {
+        const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
+
+        const err1 = new Error("Error object message - style 1");
+        console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+        logger.error("An error occurred", err1);
+
+        const err2 = new Error("Error object message - style 2");
+        console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
+        logger.error("An error occurred", err2);
+
+        await expect(true);
+    })
+
+    test("DefaultLogger - child logger meta is object", async () => {
+        const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
+
+        const childLogger = logger.createChild("subcomponent");
+
+        console.log("\r\n*** Child logger output follows ***");
+
+        log(childLogger, {});
+
+        await expect(true);
+    })
+
+    test("DefaultLogger - child logger meta is array", async () => {
+        const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
+
+        const childLogger = logger.createChild("subcomponent");
+
+        console.log("\r\n*** Child logger output follows ***");
+
+        log(childLogger, [1,2]);
+
+        await expect(true);
+    })
+
+
+    test("DefaultLogger - child logger multiple metas", async () => {
+        const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
+
+        const childLogger = logger.createChild("subcomponent");
+
+        console.log("\r\n*** Child logger output follows ***");
+
+        childLogger.debug(childLogger, ["a", "b"], [1,2]);
+
+        await expect(true);
     });
 });

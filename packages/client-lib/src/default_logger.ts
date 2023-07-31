@@ -116,7 +116,9 @@ export class DefaultLogger extends BaseLogger implements ILogger {
         return childILogger;
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     protected _log (level:LogLevel, message: any, ...meta: any[]): void {
+        // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         const parsedMeta:any = {};
         if(Array.isArray(meta) && meta.length > 0){
             if(meta[0] instanceof Error){
@@ -149,37 +151,42 @@ export class DefaultLogger extends BaseLogger implements ILogger {
         this._logger.level = this._logLevel;
     }
 
-
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     trace (message?: any, ...meta: any[]): void {
         if (!this.isTraceEnabled()) return;
 
         this._log(LogLevel.TRACE, message, ...meta);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     debug (message?: any, ...meta: any[]): void {
         if (!this.isDebugEnabled()) return;
 
         this._log(LogLevel.DEBUG, message, ...meta);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     info (message?: any, ...meta: any[]): void {
         if (!this.isInfoEnabled()) return;
 
         this._log(LogLevel.INFO, message, ...meta);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     warn (message?: any, ...meta: any[]): void {
         if (!this.isWarnEnabled()) return;
 
         this._log(LogLevel.WARN, message, ...meta);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     error (message?: any, ...meta: any[]): void {
         if (!this.isErrorEnabled()) return;
 
        this._log(LogLevel.ERROR, message, ...meta);
     }
 
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     fatal (message?: any, ...meta: any[]): void {
         if (!this.isFatalEnabled()) return;
 

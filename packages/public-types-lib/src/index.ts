@@ -57,6 +57,7 @@ export declare type LogEntry = {
   appVersion:string
   component:string | null,
   message: string,
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   meta: any
 }
 
@@ -76,10 +77,16 @@ export declare type ILogger = {
   isFatalEnabled: () => boolean;
 
   // methods to handle logging per level
+   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   trace: (message?: any, ...optionalParams: any[]) => void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   debug: (message?: any, ...optionalParams: any[]) => void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   info: (message?: any, ...optionalParams: any[]) => void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   warn: (message?: any, ...optionalParams: any[]) => void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   error: (message?: any, ...optionalParams: any[]) => void;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   fatal: (message?: any, ...optionalParams: any[]) => void;
 }
