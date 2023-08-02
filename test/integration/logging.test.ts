@@ -126,6 +126,7 @@ describe("logging-bc-integration-tests", () => {
     });
 
     test("produce and consume logs using the KafkaLogger", async () => {
+        // Arrange
         jest.setTimeout(1000)
         let receivedMessages = 0;
 
@@ -151,6 +152,7 @@ describe("logging-bc-integration-tests", () => {
         await kafkaConsumer.startAndWaitForRebalance();
         // await new Promise(f => setTimeout(f, 2000));
 
+        // Act
         await kafkaLogger.trace("Logger message. Hello World! Lets trace.");
         await kafkaLogger.debug("Logger message. Hello World! Lets debug.");
         await kafkaLogger.info("Logger message. Hello World! Lets info.");
@@ -161,6 +163,8 @@ describe("logging-bc-integration-tests", () => {
         // Wait 10 second to receive the event
         await new Promise(f => setTimeout(f, 5000));
 
+        // Assert
+
         expect(receivedMessages).toBeGreaterThanOrEqual(6);
 
         await kafkaConsumer.stop();
@@ -168,7 +172,7 @@ describe("logging-bc-integration-tests", () => {
     });
 
     test("error object tests", async () => {
-
+        // Arrange and Act
         const err1 = new Error("Error object message - style 1");
         console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
         kafkaLogger.error("An error occurred", err1);
@@ -177,22 +181,25 @@ describe("logging-bc-integration-tests", () => {
         console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
         kafkaLogger.error("An error occurred", err2);
 
+        // Assert
         await expect(true);
     });
 
     test("child logger tests", async () => {
-
+        // Arrange
         const childLogger = kafkaLogger.createChild("subcomponent");
 
+        // Act
         console.log("\r\n*** Child logger output follows ***");
 
         log(childLogger, {});
 
+        // Assert
         await expect(true);
     });
 
     test("Client-lib: check log level TRACE", async()=>{
-        // Arrange
+        // Arrange and Act
         defaultlogger.setLogLevel(LogLevel.TRACE);
 
         // Assert
@@ -200,7 +207,7 @@ describe("logging-bc-integration-tests", () => {
     });
 
     test("Client-lib: check log level DEBUG", async ()=>{
-        // Arrange
+        // Arrange and Act
         defaultlogger.setLogLevel(LogLevel.DEBUG);
 
         // Assert
@@ -208,6 +215,7 @@ describe("logging-bc-integration-tests", () => {
     });
 
     test("produce and consume log-bc using kafka and elasticsearch", async () => {
+        // Arrange
         const kafkaLogger = new KafkaLogger(
             BC_NAME,
             APP_NAME,
@@ -216,6 +224,8 @@ describe("logging-bc-integration-tests", () => {
             KAFKA_LOGS_TOPIC,
             LOGLEVEL
         );
+
+        // Act
         await kafkaLogger.init();
         // await kafkaLogger.info("Logger message. Hello World! Info.");
         await kafkaLogger.debug("Logger message. Hello World! Debug.");
@@ -232,6 +242,7 @@ describe("logging-bc-integration-tests", () => {
             }
         })
 
+        //Assert
         expect(result.hits.hits.length).toBeGreaterThan(0);
 
         await esClient.close();
@@ -270,6 +281,7 @@ describe("logging-bc-integration-tests", () => {
     });
 
     test("DefaultLogger - error object tests", async () => {
+        //Arrange and Act
         const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
         const err1 = new Error("Error object message - style 1");
@@ -280,10 +292,12 @@ describe("logging-bc-integration-tests", () => {
         console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
         logger.error("An error occurred", err2);
 
+        // Assert
         await expect(true);
     })
 
     test("DefaultLogger - child logger meta is object", async () => {
+        // Arrange and Act
         const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
         const childLogger = logger.createChild("subcomponent");
@@ -292,10 +306,12 @@ describe("logging-bc-integration-tests", () => {
 
         log(childLogger, {});
 
+        // Assert
         await expect(true);
     })
 
     test("DefaultLogger - child logger meta is array", async () => {
+        // Arrange and Act
         const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
         const childLogger = logger.createChild("subcomponent");
@@ -304,10 +320,12 @@ describe("logging-bc-integration-tests", () => {
 
         log(childLogger, [1,2]);
 
+        // Assert
         await expect(true);
     })
 
     test("DefaultLogger - child logger multiple metas", async () => {
+        // Arrange and Act
         const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
         const childLogger = logger.createChild("subcomponent");
@@ -316,23 +334,28 @@ describe("logging-bc-integration-tests", () => {
 
         childLogger.debug(childLogger, ["a", "b"], [1,2]);
 
+        // Assert
         await expect(true);
     });
 
     test("ConsoleLogger tests - createChild", async () => {
+        // Arrange
         const logger = new ConsoleLogger();
-        logger.setLogLevel(LogLevel.FATAL);
 
+        // Act
+        logger.setLogLevel(LogLevel.FATAL);
         const child = logger.createChild("test child");
 
+        // Assert
         expect(child).toBeDefined();
         expect(child.getLogLevel()).toEqual(LogLevel.FATAL);
     });
 
     test("ConsoleLogger tests", async () => {
-
+        // Arrange and Act
         logger.setLogLevel(LogLevel.TRACE);
 
+        // Assert
         logger.trace("trace message");
         logger.debug("debug message");
         logger.info("info message");
@@ -343,9 +366,10 @@ describe("logging-bc-integration-tests", () => {
         logger.error("error message", new Error("TestErrorObject"));
 
         await expect(true)
-    })
+    });
 
     test("error object tests", async () => {
+        // Arrange and Act
         const err1 = new Error("Error object message - style 1");
         console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
         logger.error("An error occurred", err1);
@@ -354,10 +378,12 @@ describe("logging-bc-integration-tests", () => {
         console.log("\r\n*** Error logging output for style 2: logger.error(err, msg) follows ***");
         logger.error(err2, "An error occurred" );
 
+        // Assert
         await expect(true);
     });
 
     test("logging-svc - pass in a bad log message", async ()=>{
+        // Act and Assert
         await expect(Service.logHandler.processLogMessage({
             key: "1",
             timestamp: Date.now(),
