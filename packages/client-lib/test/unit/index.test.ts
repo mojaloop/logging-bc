@@ -102,7 +102,7 @@ describe("default logger tests", () => {
 		log(childLogger, [1,2]);
 
 		await expect(true);
-	})
+	});
 
 
 	test("DefaultLogger - child logger multiple metas", async () => {

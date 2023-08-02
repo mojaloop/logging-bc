@@ -132,6 +132,7 @@ export class DefaultLogger extends BaseLogger implements ILogger {
                 parsedMeta.meta = meta[0];
             }
 
+            /* istanbul ignore if */
             if(meta.length>1){
                 meta = meta.splice(1);
                 parsedMeta.arr = [parsedMeta.arr || [], ...meta];

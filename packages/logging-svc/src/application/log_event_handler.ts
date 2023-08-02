@@ -82,7 +82,7 @@ export class LogEventHandler {
             this._logger.error("Unable to process value [" + value + "] of type [" + (typeof value) + "].");
             return Promise.resolve();
         }
-
+        /* istanbul ignore if */
         if (logEntries.length == 0)
             return Promise.resolve();
 

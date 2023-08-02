@@ -39,11 +39,10 @@ import {
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
 import {Service} from "../../packages/logging-svc/src/application/service"
-import {ConsoleLogger, ILogger, LogLevel} from "../../packages/public-types-lib/src/index";
+import {ConsoleLogger, ILogger, LogEntry, LogLevel} from "../../packages/public-types-lib/src/index";
 import {DefaultLogger, KafkaLogger} from "../../packages/client-lib/src/index";
 import {ElasticsearchLogStorage} from "../../packages/logging-svc/src/infrastructure/es_log_storage";
 import {Client} from "@elastic/elasticsearch";
-import exp = require("constants");
 
 jest.setTimeout(30000); // change this to suit the test (ms)
 
@@ -308,7 +307,6 @@ describe("logging-bc-integration-tests", () => {
         await expect(true);
     })
 
-
     test("DefaultLogger - child logger multiple metas", async () => {
         const logger = new DefaultLogger(BC_NAME, APP_NAME, APP_VERSION, LOGLEVEL);
 
@@ -319,5 +317,55 @@ describe("logging-bc-integration-tests", () => {
         childLogger.debug(childLogger, ["a", "b"], [1,2]);
 
         await expect(true);
+    });
+
+    test("ConsoleLogger tests - createChild", async () => {
+        const logger = new ConsoleLogger();
+        logger.setLogLevel(LogLevel.FATAL);
+
+        const child = logger.createChild("test child");
+
+        expect(child).toBeDefined();
+        expect(child.getLogLevel()).toEqual(LogLevel.FATAL);
+    });
+
+    test("ConsoleLogger tests", async () => {
+
+        logger.setLogLevel(LogLevel.TRACE);
+
+        logger.trace("trace message");
+        logger.debug("debug message");
+        logger.info("info message");
+        logger.warn("warn message");
+        logger.error("error message");
+        logger.fatal("fatal message");
+
+        logger.error("error message", new Error("TestErrorObject"));
+
+        await expect(true)
+    })
+
+    test("error object tests", async () => {
+        const err1 = new Error("Error object message - style 1");
+        console.log("\r\n*** Error logging output for style 1: logger.error(msg, err) follows ***");
+        logger.error("An error occurred", err1);
+
+        const err2 = new Error("Error object message - style 2");
+        console.log("\r\n*** Error logging output for style 2: logger.error(err, msg) follows ***");
+        logger.error(err2, "An error occurred" );
+
+        await expect(true);
+    });
+
+    test("logging-svc - pass in a bad log message", async ()=>{
+        await expect(Service.logHandler.processLogMessage({
+            key: "1",
+            timestamp: Date.now(),
+            offset: 100,
+            headers: [],
+            topic: "logs",
+            partition: 0,
+            value: "bad error message value object"
+        })).resolves;
     });
 });

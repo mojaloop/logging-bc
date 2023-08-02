@@ -50,9 +50,8 @@ class KafkaLoggerTransport extends Transport {
 
   constructor(opts:{producerOptions: MLKafkaRawProducerOptions, kafkaTopic: string}) {
     super();
-
+    /* istanbul ignore if */
     if(!opts.producerOptions.producerClientId){
-        /* istanbul ignore next */
       opts.producerOptions.producerClientId = "KafkaLoggerTransport_"+Math.random().toString(36).slice(2, 7);
     }
 
