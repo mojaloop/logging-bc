@@ -1,9 +1,10 @@
 "use strict";
 
-import {DefaultLogger} from "@mojaloop/logging-bc-client-lib";
 import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
-import {Service} from "../../src/application/service";
+
+import { IRawMessageConsumer } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 import {KafkaConsumerMock} from "./mocks/kafka_consumer_mock";
+import {Service} from "../../src/application/service";
 import {StorageMock} from "./mocks/log_storage_mock";
 import {LogEventHandler} from "../../src/application/log_event_handler";
 
@@ -17,7 +18,7 @@ describe("Main logging-svc tests", () => {
         mockStorage = new StorageMock();
         kafkaConsumer = new KafkaConsumerMock();
 
-        Service.start(
+        await Service.start(
             undefined,
             mockStorage,
             kafkaConsumer

@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/logging-bc-logging-svc",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Mojaloop Logging Service",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/logging-bc/tree/main/packages/logging-svc",
@@ -33,10 +33,10 @@
     "standard": "npm run lint",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "test:unit": "jest --passWithNoTests --testMatch '**/test/unit/**/*.test.ts'",
-    "test:integration": "jest --passWithNoTests --testMatch '**/test/integration/**/*.test.ts'",
-    "test:coverage": "jest --passWithNoTests --coverage --coverageThreshold='{}' --testMatch '**/test/unit/**/*.test.ts'",
-    "test:coverage-check": "jest --coverage --testMatch '**/test/unit/**/*.test.ts'",
+    "test:unit": "jest --passWithNoTests --testMatch **/test/unit/**/*.test.ts || ECHO.",
+    "test:integration": "jest --passWithNoTests --testMatch **/test/integration/**/*.test.ts",
+    "test:coverage": "jest --passWithNoTests --coverage --coverageThreshold='{}' --testMatch **/test/unit/**/*.test.ts",
+    "test:coverage-check": "jest --coverage --testMatch **/test/unit/**/*.test.ts",
     "audit:check": "npm npm audit",
     "dep:check": "ncu -e 2",
     "dep:update": "ncu -u"
