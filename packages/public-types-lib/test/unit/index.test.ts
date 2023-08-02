@@ -49,5 +49,5 @@ describe("ConsoleLogger tests", () => {
 		logger.error(err2, "An error occurred" );
 
 		await expect(true);
-	})
+	});
 })

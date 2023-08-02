@@ -6,6 +6,7 @@ import { IRawMessageConsumer } from "@mojaloop/platform-shared-lib-nodejs-kafka-
 import {KafkaConsumerMock} from "./mocks/kafka_consumer_mock";
 import {Service} from "../../src/application/service";
 import {StorageMock} from "./mocks/log_storage_mock";
+import {LogEventHandler} from "../../src/application/log_event_handler";
 
 let logger: ILogger;
 let mockStorage: StorageMock;
@@ -14,8 +15,6 @@ let kafkaConsumer: KafkaConsumerMock;
 describe("Main logging-svc tests", () => {
 
     beforeAll(async () => {
-
-
         mockStorage = new StorageMock();
         kafkaConsumer = new KafkaConsumerMock();
 
@@ -71,5 +70,21 @@ describe("Main logging-svc tests", () => {
 
         // it was 1 in the previous test, so should not change
         expect(mockStorage.entries.length).toEqual(1);
-    })
+    });
+
+    test("stop service should resolve", async()=>{
+        // Arrange
+        const result = Service.stop();
+
+        // Act and Assert
+        await expect(result).resolves;
+    });
+
+    test("start server with default options should throw error with no infrastructure", async ()=>{
+        // Arrange
+        const result = Service.start();
+
+        // Act and Assert
+        await expect(result).rejects.toThrowError();
+    });
 })

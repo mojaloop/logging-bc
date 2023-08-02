@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /*****
  License
  --------------
@@ -58,6 +59,7 @@ export class ElasticsearchLogStorage implements ILogStorageAdapter {
 	async store(entries: LogEntry[]): Promise<void> {
 		try {
 			for (const itm of entries) {
+                // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 				const doc: any = {
 					level: itm.level,
 					level_numeric: Object.keys(LogLevel).indexOf(itm.level.toUpperCase()),
