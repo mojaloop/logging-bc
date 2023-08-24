@@ -1,6 +1,6 @@
 {
   "name": "@mojaloop/logging-bc-logging-svc",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Mojaloop Logging Service",
   "license": "Apache-2.0",
   "homepage": "https://github.com/mojaloop/logging-bc/tree/main/packages/logging-svc",
