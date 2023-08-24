@@ -26,7 +26,7 @@
     "standard": "yarn run --no-progress --stream lint'",
     "lint": "npm -ws -p run lint",
     "lint:fix": "npm -ws -p run lint:fix",
-    "test": "npm run test:unit; npm run test:integration",
+    "test": "npm run test:unit && npm run test:integration",
     "test:unit": "npm -ws --if-present run test:unit",
     "posttest": "npm run coverage:merge && npm run coverage:gen-report",
     "coverage:merge": "nyc merge ./coverage/ ./coverage/coverage.json",
@@ -59,4 +59,3 @@
     "packages/*"
   ]
 }
-
