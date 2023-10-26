@@ -150,3 +150,7 @@ process.on("exit", async () => {
 process.on("uncaughtException", (err: Error) => {
     globalLogger.error(err);
 });
+
+// Trying to understand:
+// (node:40) MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 abort listeners added to [EventEmitter]. Use emitter.setMaxListeners() to increase limit
+process.on("warning", e => console.warn(e.stack));
