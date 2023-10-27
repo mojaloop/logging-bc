@@ -61,8 +61,8 @@ export class LogEventHandler {
             await this._storage.init();
 
             // hook logHandler process fn to the consumer handler
-            this._kafkaConsumer.setCallbackFn(this.processLogMessage.bind(this));
             this._kafkaConsumer.setTopics([this._kafkaLogsTopic]);
+            this._kafkaConsumer.setBatchCallbackFn(this._processBatchLogMessage.bind(this));
             await this._kafkaConsumer.connect();
 
             await this._kafkaConsumer.startAndWaitForRebalance();
@@ -71,23 +71,20 @@ export class LogEventHandler {
             throw e;
         }
     }
-
-    async processLogMessage(message: IRawMessage): Promise<void> {
-        const value = message.value;
-
+    private async _processBatchLogMessage(messages: IRawMessage[]): Promise<void> {
         const logEntries: LogEntry[] = [];
-        if (typeof value=="object") {
-            logEntries.push(value as LogEntry);
-        } else {
-            this._logger.error("Unable to process value [" + value + "] of type [" + (typeof value) + "].");
-            return Promise.resolve();
+
+        for (const msg of messages){
+            if (typeof msg.value=="object") {
+                logEntries.push(msg.value as LogEntry);
+            }
         }
+
         /* istanbul ignore if */
         if (logEntries.length == 0)
             return Promise.resolve();
 
         await this._storage.store(logEntries);
-        return;
     }
 
     async destroy(): Promise<void> {

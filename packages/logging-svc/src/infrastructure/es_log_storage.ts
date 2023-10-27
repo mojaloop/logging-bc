@@ -33,13 +33,14 @@
 
 import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {ILogStorageAdapter} from "../application/interfaces";
-import {Client} from "@elastic/elasticsearch";
-import {ClientOptions} from "@elastic/elasticsearch/lib/client";
+import {Client, ClientOptions} from "@elastic/elasticsearch";
+
+const MAX_LISTENERS = 50;
 
 export class ElasticsearchLogStorage implements ILogStorageAdapter {
 	private _client: Client;
-	private _clientOps: ClientOptions;
-	private _index: string;
+	private readonly _clientOps: ClientOptions;
+	private readonly _index: string;
 	private _logger: ILogger;
 
 	constructor(opts: ClientOptions, index: string, logger: ILogger) {
@@ -47,6 +48,7 @@ export class ElasticsearchLogStorage implements ILogStorageAdapter {
 		this._index = index;
 		this._logger = logger.createChild(this.constructor.name);
 		this._client = new Client(this._clientOps);
+        this._client.diagnostic.setMaxListeners(MAX_LISTENERS);
 	}
 
 	async init(): Promise<void> {
@@ -58,6 +60,7 @@ export class ElasticsearchLogStorage implements ILogStorageAdapter {
 
 	async store(entries: LogEntry[]): Promise<void> {
 		try {
+            const docs:any[] = [];
 			for (const itm of entries) {
                 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 				const doc: any = {
@@ -77,13 +80,27 @@ export class ElasticsearchLogStorage implements ILogStorageAdapter {
 					doc.meta = itm.meta;
 				}
 
-				await this._client.index({
-					index: this._index,
-					document: doc
-				});
-				//this._logger.debug("ElasticsearchLogStorage stored doc");
+                docs.push(doc);
 			}
-		} catch (err) {
+
+          /*  await this._client.index({
+                index: this._index,
+                document: doc
+            });*/
+
+            const onDocument = (doc:any):any=>{
+                return {
+                    index: {_index: this._index},
+                    document: doc
+                };
+            };
+
+            await this._client.helpers.bulk({
+                datasource: docs,
+                onDocument: onDocument.bind(this)
+            });
+            //console.log(resp);
+        } catch (err) {
 			this._logger.error("ElasticsearchLogStorage error", err);
 		}
 	}

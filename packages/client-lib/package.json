@@ -36,8 +36,8 @@
     "npm_publish": "npm version patch && npm publish --tag=latest --access public"
   },
   "dependencies": {
-    "@mojaloop/logging-bc-public-types-lib": "~0.1.20",
-    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "~0.3.67",
+    "@mojaloop/logging-bc-public-types-lib": "~0.1.22",
+    "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "~0.3.68",
     "winston": "~3.11.0"
   },
   "devDependencies": {

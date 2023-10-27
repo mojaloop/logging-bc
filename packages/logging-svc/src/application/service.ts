@@ -34,9 +34,11 @@ import {ElasticsearchLogStorage} from "../infrastructure/es_log_storage";
 import {DefaultLogger} from "@mojaloop/logging-bc-client-lib";
 import {IRawMessageConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJSON = require("../../package.json");
 const BC_NAME = "logging-bc";
 const APP_NAME = "logging-svc";
-const APP_VERSION = process.env.npm_package_version || "0.0.1";
+const APP_VERSION = packageJSON.version;
 // const PRODUCTION_MODE = process.env["PRODUCTION_MODE"] || false;
 const LOG_LEVEL:LogLevel = process.env["LOG_LEVEL"] as LogLevel || LogLevel.DEBUG;
 
@@ -48,6 +50,10 @@ const ELASTICSEARCH_USERNAME =  process.env["ELASTICSEARCH_USERNAME"] || "elasti
 const ELASTICSEARCH_PASSWORD =  process.env["ELASTICSEARCH_PASSWORD"] ||  "elasticSearchPas42";
 
 const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
+
+const CONSUMER_BATCH_SIZE = (process.env["CONSUMER_BATCH_SIZE"] && parseInt(process.env["CONSUMER_BATCH_SIZE"])) || 100;
+const CONSUMER_BATCH_TIMEOUT_MS = (process.env["CONSUMER_BATCH_TIMEOUT_MS"] && parseInt(process.env["CONSUMER_BATCH_TIMEOUT_MS"])) || 1000;
+
 
 let globalLogger: ILogger;
 
@@ -95,6 +101,8 @@ export class Service {
             const kafkaConsumerOptions: MLKafkaRawConsumerOptions = {
                 kafkaBrokerList: KAFKA_URL,
                 kafkaGroupId: `${BC_NAME}_${APP_NAME}`,
+                batchSize: CONSUMER_BATCH_SIZE,
+                batchTimeoutMs: CONSUMER_BATCH_TIMEOUT_MS
             };
             kafkaConsumer = new MLKafkaRawConsumer(kafkaConsumerOptions, this.logger);
         }
