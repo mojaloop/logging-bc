@@ -35,14 +35,15 @@ import {IRawMessage, IRawMessageConsumer} from "@mojaloop/platform-shared-lib-no
 import { IMessage } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 
 export class KafkaConsumerMock implements IRawMessageConsumer{
+    private _batchHandlerCallback: (messages: IRawMessage[])=>void;
+
     setBatchCallbackFn(_batchHandlerCallback: (messages: IRawMessage[]) => Promise<void>): void {
-        return;
+        this._batchHandlerCallback = _batchHandlerCallback;
     }
 
     setBatchSize(size: number): void {
         return;
     }
-    private _handler: (message: IRawMessage)=>void;
 
     connect(): Promise<void> {
         return Promise.resolve(undefined);
@@ -57,7 +58,7 @@ export class KafkaConsumerMock implements IRawMessageConsumer{
     }
 
     setCallbackFn(handlerCallback: (message: IRawMessage) => Promise<void>): void {
-        this._handler = handlerCallback;
+        return;
     }
 
     setTopics(topics: string[]): void {
@@ -78,6 +79,6 @@ export class KafkaConsumerMock implements IRawMessageConsumer{
 
 
     injectMessage(message: IRawMessage){
-        this._handler(message);
+        this._batchHandlerCallback([message]);
     }
 }
