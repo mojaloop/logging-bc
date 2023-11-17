@@ -54,6 +54,7 @@ const KAFKA_URL = process.env["KAFKA_URL"] || "localhost:9092";
 const CONSUMER_BATCH_SIZE = (process.env["CONSUMER_BATCH_SIZE"] && parseInt(process.env["CONSUMER_BATCH_SIZE"])) || 100;
 const CONSUMER_BATCH_TIMEOUT_MS = (process.env["CONSUMER_BATCH_TIMEOUT_MS"] && parseInt(process.env["CONSUMER_BATCH_TIMEOUT_MS"])) || 1000;
 
+const SERVICE_START_TIMEOUT_MS= (process.env["SERVICE_START_TIMEOUT_MS"] && parseInt(process.env["SERVICE_START_TIMEOUT_MS"])) || 60_000;
 
 let globalLogger: ILogger;
 
@@ -62,12 +63,19 @@ export class Service {
     static logStorageAdapter: ILogStorageAdapter;
     static logHandler: LogEventHandler;
     static consumer: IRawMessageConsumer;
+    static startupTimer: NodeJS.Timeout;
 
     static async start(
         logger?: ILogger,
         logStorageAdapter?:ILogStorageAdapter,
         kafkaConsumer?: IRawMessageConsumer
     ): Promise<void>{
+        console.log(`Service starting with PID: ${process.pid}`);
+
+        this.startupTimer = setTimeout(()=>{
+            throw new Error("Service start timed-out");
+        }, SERVICE_START_TIMEOUT_MS);
+
         if (!logger) {
             logger = new DefaultLogger(
                     BC_NAME,
@@ -114,6 +122,9 @@ export class Service {
         await this.logHandler.init();
 
         this.logger.info(`Logging Handler service v: ${APP_VERSION} initialised`);
+
+        // remove startup timeout
+        clearTimeout(this.startupTimer);
     }
 
     static async stop(force = false): Promise<void> {
