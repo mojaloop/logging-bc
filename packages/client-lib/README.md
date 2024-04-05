@@ -66,6 +66,19 @@ childLogger.debug("debug message");
 childLogger.info("info message");
 ```
 
+
+### Avoiding unecessary work
+All the log methods debug(), info(), etc, have a guard inside that checks the enabled log level and will ignore the call if the called log level is not enabled.
+For cases where the parameters of the log calls are computationally expensive, it is a good idea to prefix the log call with a logical guard expression, like so:
+
+```Typescript
+this._logger.isDebugEnabled() && this._logger.debug(`Something happened, message is: ${JSON.stringify(message)}`)
+```
+
+With this strategy, we avoid the evaluation of the `JSON.stringify(message)` entirely when debug loglevel is not enabled. This is specially important in places where the code might be executed repeatedly.
+
+**Note** that this is this is only worth it when the parameters of the log call are computationally expensive, for simple parameters like static strings this is not needed and should be avoided to keep the code simple.
+
 ### KafkaLogger
 This logger implementation extends the `DefaultLogger` and will additionally ship the logs via **Kafka** to the central logging service, which will store them.
 
