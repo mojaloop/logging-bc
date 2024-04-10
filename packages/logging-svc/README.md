@@ -65,3 +65,21 @@ yarn test:unit
 ## Known Issues
 
 - added `typescript` to [.ncurc.json](./.ncurc.json) as the `dep:update` script will install a non-supported version of typescript
+
+## Configuration 
+
+### Environment variables
+
+| Environment Variable | Description    | Example Values         |
+|---------------------|-----------------|-----------------------------------------|
+| PRODUCTION_MODE      | Flag indicating production mode   | FALSE                  |
+| LOG_LEVEL            | Logging level for the application                  | LogLevel.DEBUG        |
+| KAFKA_URL       | Kafka broker URL     | localhost:9092          |
+| KAFKA_LOGS_TOPIC      | Kafka topic for logs          | logs    |
+| SERVICE_START_TIMEOUT_MS               | Timeout for service startup in milliseconds        | 60_000                 |
+| CONSUMER_BATCH_SIZE | Kafka Consumer Batch Size  | 100 | 
+| CONSUMER_BATCH_TIMEOUT_MS | Kafka Consumer Batch Timeout Milliseconds | 1000 |
+| ELASTICSEARCH_URL| Elastics Search URL | https://localhost:9200 | 
+| ELASTICSEARCH_LOGS_INDEX | Elastics Search Logs Index | ml-logging  | 
+| ELASTICSEARCH_USERNAME | Elastics Search Username| elastic | 
+| ELASTICSEARCH_PASSWORD | Elastics Search Password | elasticSearchPas42 | 
