@@ -53,5 +53,5 @@ RUN apk add librdkafka
 COPY --from=builder /app .
 
 # kafka handler, no http server yet
-
+ENV NODE_ENV=production
 CMD [ "npm", "run", "start:logging-svc" ]

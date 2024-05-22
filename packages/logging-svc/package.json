@@ -41,8 +41,8 @@
     "dependencies": {
         "@elastic/elasticsearch": "^8.12.1",
         "@mojaloop/logging-bc-public-types-lib": "*",
-        "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "~0.5.7",
-        "@mojaloop/platform-shared-lib-messaging-types-lib": "~0.5.5"
+        "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "~0.5.18",
+        "@mojaloop/platform-shared-lib-messaging-types-lib": "~0.5.7"
     },
     "devDependencies": {
         "eslint": "^8.56.0",
