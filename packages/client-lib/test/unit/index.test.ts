@@ -74,8 +74,8 @@ describe("default logger tests", () => {
 		logger.error("An error occurred", err1);
 
 		const err2 = new Error("Error object message - style 2");
-		console.log("\r\n*** Error logging output for style 2: logger.error(err, err) follows ***");
-		logger.error("An error occurred", err2);
+		console.log("\r\n*** Error logging output for style 2: logger.error(err, msg) follows ***");
+		logger.error(err2, "An error occurred");
 
 		await expect(true);
 	})
