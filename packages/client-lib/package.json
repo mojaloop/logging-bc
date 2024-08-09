@@ -37,6 +37,7 @@
     "dependencies": {
         "@mojaloop/logging-bc-public-types-lib": "~0.5.3",
         "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib": "~0.5.7",
+        "google-protobuf": "^3.21.4",
         "winston": "~3.11.0"
     },
     "devDependencies": {

@@ -90,3 +90,5 @@ export declare type ILogger = {
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   fatal: (message?: any, ...optionalParams: any[]) => void;
 }
+
+export  { LogLevelPB, LogEntryPB } from "./proto/log_entry"
