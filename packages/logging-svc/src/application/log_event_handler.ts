@@ -30,24 +30,25 @@
 
 "use strict";
 
-import {ILogger, LogEntry} from "@mojaloop/logging-bc-public-types-lib";
+import {ILogger, LogEntry, LogEntryPB, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {
     IRawMessage,
     IRawMessageConsumer
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 import {ILogStorageAdapter} from "./interfaces";
+import { IMessage, IMessageConsumer } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 
 export class LogEventHandler {
     private _storage: ILogStorageAdapter;
     private _logger: ILogger;
     // private _consumerOpts: MLKafkaRawConsumerOptions;
     private _kafkaLogsTopic: string;
-    private _kafkaConsumer: IRawMessageConsumer;
+    private _kafkaConsumer: IMessageConsumer;
 
     constructor(
         logger: ILogger,
         storage: ILogStorageAdapter,
-        kafkaConsumer: IRawMessageConsumer,
+        kafkaConsumer: IMessageConsumer,
         logsTopic: string
     ) {
         this._logger = logger.createChild(this.constructor.name);
@@ -71,12 +72,26 @@ export class LogEventHandler {
             throw e;
         }
     }
-    private async _processBatchLogMessage(messages: IRawMessage[]): Promise<void> {
+    private async _processBatchLogMessage(messages: IMessage[] ): Promise<void> {
         const logEntries: LogEntry[] = [];
 
         for (const msg of messages){
-            if (typeof msg.value=="object") {
-                logEntries.push(msg.value as LogEntry);
+            if (msg.payload && msg.payload.event instanceof Uint8Array) {
+                const serializedItem = msg.payload.event;
+                const itemDeserialized = LogEntryPB.deserializeBinary(serializedItem)
+                const item = itemDeserialized.toObject();
+
+                const logEntry: LogEntry = {
+                    level: Object.values(LogLevel)[item.level!],
+                    timestamp: item.timestamp!,
+                    bcName: item.bcName!,
+                    appName: item.appName!,
+                    appVersion: item.appVersion!,
+                    component: item.component!,
+                    message: item.message!,
+                    meta: item.meta!
+                }
+                logEntries.push(logEntry);
             }
         }
 

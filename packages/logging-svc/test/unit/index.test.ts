@@ -1,22 +1,21 @@
 "use strict";
 
-import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
+import {ILogger, LogEntry, LogEntryPB, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 
-import { IRawMessageConsumer } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
-import {KafkaConsumerMock} from "./mocks/kafka_consumer_mock";
-import {LogEventHandler} from "../../src/application/log_event_handler";
 import {Service} from "../../src/application/service";
 import {StorageMock} from "./mocks/log_storage_mock";
+import { ProtoBuffConsumerMock } from "./mocks/protobuff_consumer_mock";
+import { MessageTypes } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 
 let logger: ILogger;
 let mockStorage: StorageMock;
-let kafkaConsumer: KafkaConsumerMock;
+let kafkaConsumer: ProtoBuffConsumerMock;
 
 describe("Main logging-svc tests", () => {
 
     beforeAll(async () => {
         mockStorage = new StorageMock();
-        kafkaConsumer = new KafkaConsumerMock();
+        kafkaConsumer = new ProtoBuffConsumerMock();
 
         await Service.start(
             undefined,
@@ -32,25 +31,29 @@ describe("Main logging-svc tests", () => {
     })
 
     test('Test inject a log message', async () => {
-        const logEntry: LogEntry = {
-            level: LogLevel.INFO,
-            bcName: "Logging BC",
-            appName: "Logging Service",
-            appVersion: "0.0.0",
-            timestamp: Date.now(),
-            meta: null,
-            component: null,
-            message: "log message"
-        }
+        const logEntry = new LogEntryPB({
+            level: 1,
+            bcName: "bcNameTest",
+            appName: "appNameTest",
+            appVersion: "appVersionTest",
+            timestamp: new Date().getTime(),
+        });
+
+        const serializedLogEntry = logEntry.serializeBinary();
 
         kafkaConsumer.injectMessage({
-            key: "1",
-            timestamp: Date.now(),
-            offset: 100,
-            headers: [],
-            topic: "logs",
-            partition: 0,
-            value: logEntry
+            msgType: MessageTypes.DOMAIN_EVENT,
+            msgName: "",
+            msgId: "",
+            msgTimestamp: 0,
+            msgTopic: "",
+            msgKey: null,
+            msgPartition: null,
+            msgOffset: null,
+            payload: {
+                event: serializedLogEntry
+            },
+            fspiopOpaqueState: undefined
         });
 
         expect(mockStorage.entries.length).toEqual(1);
@@ -59,13 +62,16 @@ describe("Main logging-svc tests", () => {
 
     test('Test inject a bad log message', async () => {
         kafkaConsumer.injectMessage({
-            key: "1",
-            timestamp: Date.now(),
-            offset: 100,
-            headers: [],
-            topic: "logs",
-            partition: 0,
-            value: "bad error message value object"
+            msgType: MessageTypes.DOMAIN_EVENT,
+            msgName: "",
+            msgId: "",
+            msgTimestamp: 0,
+            msgTopic: "",
+            msgKey: null,
+            msgPartition: null,
+            msgOffset: null,
+            payload: undefined,
+            fspiopOpaqueState: undefined
         });
 
         // it was 1 in the previous test, so should not change

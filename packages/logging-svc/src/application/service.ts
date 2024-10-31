@@ -32,7 +32,8 @@ import {ILogStorageAdapter} from "./interfaces";
 import {ILogger, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {ElasticsearchLogStorage} from "../infrastructure/es_log_storage";
 import {DefaultLogger} from "@mojaloop/logging-bc-client-lib";
-import {IRawMessageConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
+import {IRawMessageConsumer, MLKafkaProtoBuffConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
+import { IMessageConsumer } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJSON = require("../../package.json");
@@ -67,13 +68,13 @@ export class Service {
     static logger: ILogger;
     static logStorageAdapter: ILogStorageAdapter;
     static logHandler: LogEventHandler;
-    static consumer: IRawMessageConsumer;
+    static consumer: IMessageConsumer;
     static startupTimer: NodeJS.Timeout;
 
     static async start(
         logger?: ILogger,
         logStorageAdapter?:ILogStorageAdapter,
-        kafkaConsumer?: IRawMessageConsumer
+        kafkaConsumer?: IMessageConsumer
     ): Promise<void>{
         console.log(`Service starting with PID: ${process.pid}`);
 
@@ -126,7 +127,7 @@ export class Service {
                 };
             }
 
-            kafkaConsumer = new MLKafkaRawConsumer(kafkaConsumerOptions, this.logger);
+            kafkaConsumer = new MLKafkaProtoBuffConsumer(kafkaConsumerOptions, this.logger);
         }
         this.consumer = kafkaConsumer;
 

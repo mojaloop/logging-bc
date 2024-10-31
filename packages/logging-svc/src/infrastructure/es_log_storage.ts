@@ -31,7 +31,7 @@
 
 "use strict";
 
-import {ILogger, LogEntry, LogEntryPB, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
+import {ILogger, LogEntry, LogLevel} from "@mojaloop/logging-bc-public-types-lib";
 import {ILogStorageAdapter} from "../application/interfaces";
 import {Client, ClientOptions} from "@elastic/elasticsearch";
 
@@ -61,15 +61,12 @@ export class ElasticsearchLogStorage implements ILogStorageAdapter {
 	async store(entries: LogEntry[]): Promise<void> {
 		try {
             const docs:any[] = [];
-			for (const serializedItem of entries) {
-				// TODO: fix the types
-				const itemDeserialized = LogEntryPB.deserializeBinary(serializedItem as unknown as Uint8Array)
-				const itm = itemDeserialized.toObject() as any;
-				debugger
+			for (const itm of entries) {
                 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 				const doc: any = {
 					level: itm.level,
-					level_numeric: Object.keys(LogLevel).indexOf(itm.level.toUpperCase()),
+					// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+					level_numeric: Object.keys(LogLevel)[itm.level as any],
 					timestamp: itm.timestamp,
 					bcName: itm.bcName,
 					appName: itm.appName,

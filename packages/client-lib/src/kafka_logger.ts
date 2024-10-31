@@ -2,23 +2,23 @@ import { ILogger, LogLevel } from "@mojaloop/logging-bc-public-types-lib";
 import { DefaultLogger } from "./default_logger";
 import {
   IRawMessage,
-  MLKafkaRawProducer,
-  MLKafkaRawProducerOptions
+  MLKafkaProtoBuffProducer,
+  MLKafkaProtoBuffProducerOptions
 } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 import Transport from "winston-transport";
 import Winston from "winston";
 import { LogLevelPB, LogEntryPB } from "@mojaloop/logging-bc-public-types-lib/";
-import { Struct } from "google-protobuf/google/protobuf/struct_pb";
+import { IMessage, MessageTypes } from "@mojaloop/platform-shared-lib-messaging-types-lib";
 
 let globalKafkaLoggerTransport: KafkaLoggerTransport | null = null;
 
 class KafkaLoggerTransport extends Transport {
-  _producerOptions: MLKafkaRawProducerOptions;
-  _kafkaProducer: MLKafkaRawProducer;
+  _producerOptions: MLKafkaProtoBuffProducerOptions;
+  _kafkaProducer: MLKafkaProtoBuffProducer;
   _kafkaTopic: string;
   _ready = false;
 
-  constructor(opts: { producerOptions: MLKafkaRawProducerOptions, kafkaTopic: string }) {
+  constructor(opts: { producerOptions: MLKafkaProtoBuffProducerOptions, kafkaTopic: string }) {
     super();
     /* istanbul ignore if */
     if (!opts.producerOptions.producerClientId) {
@@ -27,7 +27,7 @@ class KafkaLoggerTransport extends Transport {
 
     this._producerOptions = opts.producerOptions;
     this._kafkaTopic = opts.kafkaTopic;
-    this._kafkaProducer = new MLKafkaRawProducer(this._producerOptions);
+    this._kafkaProducer = new MLKafkaProtoBuffProducer(this._producerOptions);
   }
 
   async start(): Promise<void> {
@@ -38,39 +38,37 @@ class KafkaLoggerTransport extends Transport {
     return this._kafkaProducer.destroy();
   }
 
-  private async _log(info: Winston.LogEntry): Promise<void> {
-    const struct = Struct.fromJavaScript(info.extra);
-
-    // const metaAny = new google.protobuf.Any();
-    // metaAny.type_url = "type.googleapis.com/google.protobuf.Struct";
-    // metaAny.value = struct.serializeBinary();
+  private async _log(info:Winston.LogEntry): Promise<void>{
 
     const logEntry = new LogEntryPB({
-        level: LogLevelPB[info.level.toUpperCase() as keyof typeof LogLevelPB],
-        bcName: info.bcName,
-        appName: info.appName,
-        appVersion: info.appVersion,
-        timestamp: new Date(info.timestamp).getTime(),
-        message: info.message,
-        component: info.componentName,
-        // meta: metaAny
+      level: LogLevelPB[info.level.toUpperCase() as keyof typeof LogLevelPB],
+      bcName: info.bcName,
+      appName: info.appName,
+      appVersion: info.appVersion,
+      timestamp: new Date(info.timestamp).getTime(),
+      message: info.message,
+      component: info.componentName,
+      meta: info.extra
     });
+
 
     const serializedLogEntry = logEntry.serializeBinary();
 
-    const message: IRawMessage = {
-        topic: this._kafkaTopic,
-        value: Buffer.from(serializedLogEntry),
-        key: null,
-        timestamp: Date.now(),
-        headers: [],
-        partition: null,
-        offset: null,
+    const message: IMessage = {
+      msgTopic: this._kafkaTopic,
+      payload: serializedLogEntry,
+      msgType: MessageTypes.DOMAIN_EVENT,
+      msgName: "",
+      msgId: "",
+      msgTimestamp: 0,
+      msgKey: null,
+      msgPartition: null,
+      msgOffset: null,
+      fspiopOpaqueState: undefined
     };
 
     await this._kafkaProducer.send(message);
   }
-
 
   log(info: Winston.LogEntry, callback: () => void) {
     this._log(info).then(() => {
@@ -80,13 +78,13 @@ class KafkaLoggerTransport extends Transport {
 }
 
 export class KafkaLogger extends DefaultLogger implements ILogger {
-  _producerOptions: MLKafkaRawProducerOptions;
+  _producerOptions: MLKafkaProtoBuffProducerOptions;
   _kafkaTopic: string;
   _kafkaTransport: KafkaLoggerTransport;
   _ready = false;
 
   constructor(bcName: string, appName: string, appVersion: string,
-              producerOptions: MLKafkaRawProducerOptions,
+              producerOptions: MLKafkaProtoBuffProducerOptions,
               kafkaTopic: string,
               level: LogLevel = LogLevel.INFO,
               loggerInstance?: Winston.Logger
