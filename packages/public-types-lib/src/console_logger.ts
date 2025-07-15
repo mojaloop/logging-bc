@@ -72,31 +72,37 @@ export class ConsoleLogger implements ILogger {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     trace (message?: any, ...optional: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         this.isTraceEnabled() && console.trace(message, ...optional);
     }
 
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     debug (message?: any, ...optional: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         this.isDebugEnabled() && console.debug(message, ...optional);
     }
 
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     info (message?: any, ...optional: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         this.isInfoEnabled() && console.info(message, ...optional);
     }
 
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     warn (message?: any, ...optional: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         this.isWarnEnabled() && console.warn(message, ...optional);
     }
 
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     error (message?: any, ...optional: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         this.isErrorEnabled() && console.error(message, ...optional);
     }
 
     // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     fatal (message?: any, ...optional: any[]): void {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         this.isFatalEnabled() && console.error(message, ...optional);
     }
 }

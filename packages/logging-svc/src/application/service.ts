@@ -35,7 +35,7 @@ import {ElasticsearchLogStorage} from "../infrastructure/es_log_storage";
 import {DefaultLogger} from "@mojaloop/logging-bc-client-lib";
 import {IRawMessageConsumer, MLKafkaRawConsumer, MLKafkaRawConsumerOptions } from "@mojaloop/platform-shared-lib-nodejs-kafka-client-lib";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const packageJSON = require("../../package.json");
 const BC_NAME = "logging-bc";
 const APP_NAME = "logging-svc";
