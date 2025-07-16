@@ -128,3 +128,5 @@ devspace*
 
 # ignore all files in the .idea directory
 .idea/ 
+
+CLAUDE.md
