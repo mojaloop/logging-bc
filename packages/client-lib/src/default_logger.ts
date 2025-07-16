@@ -55,13 +55,13 @@ const customLevels = {
 
 //colorizer.addColors(customLevels.colors);
 
-const consoleFormat = Winston.format.printf((args) => {
+const consoleFormat = Winston.format.printf((args: any) => {
     let format = `${args.timestamp} \u001b[90m(${args.bcName} ${args.appName} v${args.appVersion})\u001b[39m (${args.componentName || "null"}) [${args.label || ""}] ${args.level}: ${args.message}`;
 
     if(args.extra){
-        if(args.extra.meta ){
+        if(args.extra && typeof args.extra === "object" && "meta" in args.extra && args.extra.meta ){
             format += ` \u001b[90mmeta: ${JSON.stringify(args.extra.meta, null, 2)}\u001b[39m`;
-        }else if (args.extra.error){
+        }else if (args.extra && typeof args.extra === "object" && "error" in args.extra && args.extra.error){
             format += ` \u001b[90merror stack: \n${args.extra.error.stack}\u001b[39m`;
         }else{
             format += ` \u001b[90mmeta: ${JSON.stringify(args.extra, null, 2)}\u001b[39m`;
