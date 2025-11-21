@@ -1,5 +1,6 @@
 {
   "reject": [
-    "typescript"
+    "typescript",
+    "@mojaloop/*"
   ]
 }

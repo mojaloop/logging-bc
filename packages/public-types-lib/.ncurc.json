@@ -1,6 +1,7 @@
 {
   "reject": [
     "typescript",
-    "@mojaloop/logging-bc-common"
+    "@mojaloop/logging-bc-common",
+    "@mojaloop/*"
   ]
 }
