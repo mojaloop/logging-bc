@@ -1,4 +1,6 @@
 {
-  "reject": [],
+  "reject": [
+    "@mojaloop/*"
+  ],
   "target": "patch"
 }
